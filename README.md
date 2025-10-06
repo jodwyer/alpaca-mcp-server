@@ -1,20 +1,22 @@
-<p align="center" style="background:#F7F7F7;padding:32px;border-radius:16px;margin-bottom:32px;">
-  <img src="assets/01-primary-alpaca-logo.png" alt="Alpaca logo" style="width:220px;margin-bottom:24px;">
-  <span style="display:block;color:#101010;font-size:24px;font-weight:700;margin-bottom:12px;">Alpaca MCP Server</span>
-  <span style="display:block;color:#101010;font-size:16px;margin-bottom:24px;">A comprehensive Model Context Protocol (MCP) server for Alpaca's Trading API. Enable natural language trading operations through AI assistants like Claude, Cursor, and VS Code. Supports stocks, options, crypto, portfolio management, and real-time market data.</span>
-  <span style="display:flex;flex-direction:column;gap:14px;align-items:center;">
-    <span align="center" style="display:inline-flex;flex-wrap:wrap;gap:12px;justify-content:center;">
-      <a href="https://x.com/alpacahq?lang=en" style="text-decoration:none;padding:10px 18px;border-radius:8px;border:2px solid #FCD72B;background:transparent;color:#101010;font-weight:600;">X </a>
-      <a href="https://www.linkedin.com/company/alpacamarkets/" style="text-decoration:none;padding:10px 18px;border-radius:8px;border:2px solid #FCD72B;background:transparent;color:#101010;font-weight:600;">LinkedIn</a>
-      <a href="https://www.reddit.com/r/alpacamarkets/" style="text-decoration:none;padding:10px 18px;border-radius:8px;border:2px solid #FCD72B;background:transparent;color:#101010;font-weight:600;">Reddit</a>
-      <a href="https://alpaca.markets/slack" style="text-decoration:none;padding:10px 18px;border-radius:8px;border:2px solid #FCD72B;background:transparent;color:#101010;font-weight:600;">Slack</a>
-    </span>
-    <span align="center" style="display:inline-flex;flex-wrap:wrap;gap:12px;justify-content:center;">
-      <a href="https://forum.alpaca.markets/" style="text-decoration:none;padding:10px 18px;border-radius:8px;border:2px solid #FCD72B;background:transparent;color:#101010;font-weight:600;">Alpaca Forum</a>
-      <a href="https://docs.alpaca.markets/docs/getting-started" style="text-decoration:none;padding:10px 18px;border-radius:8px;border:2px solid #FCD72B;background:transparent;color:#101010;font-weight:600;">API Docs</a>
-      <a href="https://alpaca.markets/sdks/python/" style="text-decoration:none;padding:10px 18px;border-radius:8px;border:2px solid #FCD72B;background:transparent;color:#101010;font-weight:600;">Python SDK</a>
-    </span>
-  </span>
+<p align="center">
+  <img src="assets/01-primary-alpaca-logo.png" alt="Alpaca logo" width="220">
+</p>
+
+<div align="center">
+
+[![X](https://img.shields.io/badge/-DCDCDC.svg?style=for-the-badge&logo=x&logoColor=000)](https://x.com/alpacahq?lang=en)
+[![Reddit](https://img.shields.io/badge/-DCDCDC.svg?style=for-the-badge&logo=reddit&logoColor=000)](https://www.reddit.com/r/alpacamarkets/)
+[![Slack](https://img.shields.io/badge/-DCDCDC.svg?style=for-the-badge&logo=slack&logoColor=000)](https://alpaca.markets/slack)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-DCDCDC.svg?style=for-the-badge&logoColor=000)](https://www.linkedin.com/company/alpacamarkets/)
+
+[![Forum](https://img.shields.io/badge/Forum-DCDCDC.svg?style=for-the-badge&logo=discourse&logoColor=000)](https://forum.alpaca.markets/)
+[![Docs](https://img.shields.io/badge/Docs-DCDCDC.svg?style=for-the-badge&logoColor=000)](https://docs.alpaca.markets/docs/getting-started)
+[![Python SDK](https://img.shields.io/badge/Python_SDK-DCDCDC.svg?style=for-the-badge&logo=python&logoColor=000)](https://alpaca.markets/sdks/python/)
+
+</div>
+
+<p align="center">
+  A comprehensive Model Context Protocol (MCP) server for Alpaca's Trading API. Enable natural language trading operations through AI assistants like Claude, Cursor, and VS Code. Supports stocks, options, crypto, portfolio management, and real-time market data.
 </p>
 
 
