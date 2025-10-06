@@ -4,15 +4,15 @@
   <span style="display:block;color:#101010;font-size:16px;margin-bottom:24px;">A comprehensive Model Context Protocol (MCP) server for Alpaca's Trading API. Enable natural language trading operations through AI assistants like Claude, Cursor, and VS Code. Supports stocks, options, crypto, portfolio management, and real-time market data.</span>
   <span style="display:flex;flex-direction:column;gap:14px;align-items:center;">
     <span align="center" style="display:inline-flex;flex-wrap:wrap;gap:12px;justify-content:center;">
-      <a href="https://x.com/alpacahq?lang=en" style="text-decoration:none;padding:10px 18px;border-radius:8px;border:2px solid #E4E4E7;background:transparent;color:#101010;font-weight:600;">X </a>
-      <a href="https://www.linkedin.com/company/alpacamarkets/" style="text-decoration:none;padding:10px 18px;border-radius:8px;border:2px solid #E4E4E7;background:transparent;color:#101010;font-weight:600;">LinkedIn</a>
-      <a href="https://www.reddit.com/r/alpacamarkets/" style="text-decoration:none;padding:10px 18px;border-radius:8px;border:2px solid #E4E4E7;background:transparent;color:#101010;font-weight:600;">Reddit</a>
-      <a href="https://alpaca.markets/slack" style="text-decoration:none;padding:10px 18px;border-radius:8px;border:2px solid #E4E4E7;background:transparent;color:#101010;font-weight:600;">Slack</a>
+      <a href="https://x.com/alpacahq?lang=en" style="text-decoration:none;padding:10px 18px;border-radius:8px;border:2px solid #FCD72B;background:transparent;color:#101010;font-weight:600;">X </a>
+      <a href="https://www.linkedin.com/company/alpacamarkets/" style="text-decoration:none;padding:10px 18px;border-radius:8px;border:2px solid #FCD72B;background:transparent;color:#101010;font-weight:600;">LinkedIn</a>
+      <a href="https://www.reddit.com/r/alpacamarkets/" style="text-decoration:none;padding:10px 18px;border-radius:8px;border:2px solid #FCD72B;background:transparent;color:#101010;font-weight:600;">Reddit</a>
+      <a href="https://alpaca.markets/slack" style="text-decoration:none;padding:10px 18px;border-radius:8px;border:2px solid #FCD72B;background:transparent;color:#101010;font-weight:600;">Slack</a>
     </span>
     <span align="center" style="display:inline-flex;flex-wrap:wrap;gap:12px;justify-content:center;">
-      <a href="https://forum.alpaca.markets/" style="text-decoration:none;padding:10px 18px;border-radius:8px;border:2px solid #E4E4E7;background:transparent;color:#101010;font-weight:600;">Alpaca Forum</a>
-      <a href="https://docs.alpaca.markets/docs/getting-started" style="text-decoration:none;padding:10px 18px;border-radius:8px;border:2px solid #E4E4E7;background:transparent;color:#101010;font-weight:600;">API Docs</a>
-      <a href="https://alpaca.markets/sdks/python/" style="text-decoration:none;padding:10px 18px;border-radius:8px;border:2px solid #E4E4E7;background:transparent;color:#101010;font-weight:600;">Python SDK</a>
+      <a href="https://forum.alpaca.markets/" style="text-decoration:none;padding:10px 18px;border-radius:8px;border:2px solid #FCD72B;background:transparent;color:#101010;font-weight:600;">Alpaca Forum</a>
+      <a href="https://docs.alpaca.markets/docs/getting-started" style="text-decoration:none;padding:10px 18px;border-radius:8px;border:2px solid #FCD72B;background:transparent;color:#101010;font-weight:600;">API Docs</a>
+      <a href="https://alpaca.markets/sdks/python/" style="text-decoration:none;padding:10px 18px;border-radius:8px;border:2px solid #FCD72B;background:transparent;color:#101010;font-weight:600;">Python SDK</a>
     </span>
   </span>
 </p>

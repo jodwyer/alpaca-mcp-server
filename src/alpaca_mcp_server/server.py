@@ -2926,7 +2926,12 @@ class AlpacaMCPServer:
         if transport == "stdio":
             mcp.run()
         else:
-            mcp.run(transport=transport, host=host, port=port)
+            # Configure host/port via settings (mcp package v1.16.0 approach)
+            mcp.settings.host = host
+            mcp.settings.port = port
+            # Map 'http' to 'streamable-http' transport
+            transport_type = "streamable-http" if transport == "http" else transport
+            mcp.run(transport=transport_type)
 
 
 # Run the server
