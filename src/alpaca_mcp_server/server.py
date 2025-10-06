@@ -1,3 +1,19 @@
+"""
+Alpaca MCP Server - Standalone Implementation
+
+This is a standalone MCP server that provides comprehensive Alpaca Trading API integration
+for stocks, options, crypto, portfolio management, and real-time market data.
+
+Supports 31+ tools including:
+- Account management and portfolio tracking
+- Order placement and management (stocks, crypto, options)
+- Position tracking and closing
+- Market data retrieval (quotes, bars, trades, snapshots)
+- Options trading strategies and analytics
+- Watchlist management
+- Market calendar and corporate actions
+"""
+
 import os
 import re
 import sys
@@ -5,6 +21,7 @@ import time
 import argparse
 from datetime import datetime, timedelta, date
 from typing import Dict, Any, List, Optional, Union
+from pathlib import Path
 
 from dotenv import load_dotenv
 
@@ -64,83 +81,34 @@ from alpaca.trading.requests import (
 
 from mcp.server.fastmcp import FastMCP
 
-# Configure Python path for local imports
+# Configure Python path for local imports (UserAgentMixin)
 current_dir = os.path.dirname(os.path.abspath(__file__))
-github_core_path = os.path.join(current_dir, '.github', 'core')
-if github_core_path not in sys.path:
-    sys.path.insert(0, github_core_path)
+project_root = Path(current_dir).parent.parent
+github_core_path = project_root / '.github' / 'core'
+if github_core_path.exists() and str(github_core_path) not in sys.path:
+    sys.path.insert(0, str(github_core_path))
+
 # Import the UserAgentMixin
-from user_agent_mixin import UserAgentMixin
-# Define new classes using the mixin
-class TradingClientSigned(UserAgentMixin, TradingClient): pass
-class StockHistoricalDataClientSigned(UserAgentMixin, StockHistoricalDataClient): pass
-class OptionHistoricalDataClientSigned(UserAgentMixin, OptionHistoricalDataClient): pass
-class CorporateActionsClientSigned(UserAgentMixin, CorporateActionsClient): pass
-class CryptoHistoricalDataClientSigned(UserAgentMixin, CryptoHistoricalDataClient): pass
+try:
+    from user_agent_mixin import UserAgentMixin
+    # Define new classes using the mixin
+    class TradingClientSigned(UserAgentMixin, TradingClient): pass
+    class StockHistoricalDataClientSigned(UserAgentMixin, StockHistoricalDataClient): pass
+    class OptionHistoricalDataClientSigned(UserAgentMixin, OptionHistoricalDataClient): pass
+    class CorporateActionsClientSigned(UserAgentMixin, CorporateActionsClient): pass
+    class CryptoHistoricalDataClientSigned(UserAgentMixin, CryptoHistoricalDataClient): pass
+except ImportError:
+    # Fallback to unsigned clients if mixin not available
+    TradingClientSigned = TradingClient
+    StockHistoricalDataClientSigned = StockHistoricalDataClient
+    OptionHistoricalDataClientSigned = OptionHistoricalDataClient
+    CorporateActionsClientSigned = CorporateActionsClient
+    CryptoHistoricalDataClientSigned = CryptoHistoricalDataClient
 
-def detect_pycharm_environment():
-    """
-    Detect if we're running in PyCharm using environment variable.
-    Set MCP_CLIENT=pycharm in your PyCharm MCP configuration.
-    """
-    mcp_client = os.getenv("MCP_CLIENT", "").lower()
-    return mcp_client == "pycharm"
-
-def parse_arguments():
-    """Parse command line arguments for transport configuration."""
-    parser = argparse.ArgumentParser(description="Alpaca MCP Server")
-    parser.add_argument(
-        "--transport",
-        choices=["stdio", "http", "sse"],
-        default="stdio",
-        help="Transport method to use (default: stdio). Note: WebSocket not supported, use HTTP for remote connections"
-    )
-    parser.add_argument(
-        "--host",
-        default="127.0.0.1",
-        help="Host to bind the server to for HTTP/SSE transport (default: 127.0.0.1)"
-    )
-    parser.add_argument(
-        "--port",
-        type=int,
-        default=8000,
-        help="Port to bind the server to for HTTP/SSE transport (default: 8000)"
-    )
-    return parser.parse_args()
-
-def setup_transport_config(args):
-    """Setup transport configuration based on command line arguments."""
-    if args.transport == "http":
-        return {
-            "transport": "http",
-            "host": args.host,
-            "port": args.port
-        }
-    elif args.transport == "sse":
-        print(f"Warning: SSE transport is deprecated. Consider using HTTP transport instead.")
-        return {
-            "transport": "sse",
-            "host": args.host,
-            "port": args.port
-        }
-    else:
-        return {
-            "transport": "stdio"
-        }
-
-# Default args for when module is imported (not run directly)
-class DefaultArgs:
-    def __init__(self):
-        self.transport = "stdio"
-        # host and port are only set when needed (via argument parsing)
-
-# Only parse arguments when running as main script, use defaults when imported
-args = DefaultArgs()
-
-# Initialize Alpaca clients using environment variables
-# Import our .env file within the same directory
+# Load environment variables
 load_dotenv()
 
+# Get environment variables
 TRADE_API_KEY = os.getenv("ALPACA_API_KEY")
 TRADE_API_SECRET = os.getenv("ALPACA_SECRET_KEY")
 ALPACA_PAPER_TRADE = os.getenv("ALPACA_PAPER_TRADE", "True")
@@ -150,43 +118,40 @@ DATA_API_URL = os.getenv("DATA_API_URL")
 STREAM_DATA_WSS = os.getenv("STREAM_DATA_WSS")
 DEBUG = os.getenv("DEBUG", "False")
 
-# Initialize FastMCP server with intelligent log level detection
+# Initialize log level
+def detect_pycharm_environment():
+    """Detect if we're running in PyCharm using environment variable."""
+    mcp_client = os.getenv("MCP_CLIENT", "").lower()
+    return mcp_client == "pycharm"
+
 is_pycharm = detect_pycharm_environment()
 log_level = "ERROR" if is_pycharm else "INFO"
 log_level = "DEBUG" if DEBUG.lower() == "true" else log_level
 
-# Optional: Print detection result for debugging (only in non-PyCharm environments)
-# Only print when running as main script to avoid noise when imported
-if not is_pycharm and __name__ == "__main__":
-    print(f"MCP Server starting with transport={args.transport}, log_level={log_level} (PyCharm detected: {is_pycharm})")
-
+# Initialize FastMCP server
 mcp = FastMCP("alpaca-trading", log_level=log_level)
 
-
 # Check if keys are available
-if not TRADE_API_KEY or not TRADE_API_SECRET:
-    raise ValueError("Alpaca API credentials not found in environment variables.")
+# COMMENTED OUT: Allow server to start without credentials for MCP discovery and CLI init
+# The Alpaca SDK will raise appropriate errors when API calls are made without valid credentials
+# if not TRADE_API_KEY or not TRADE_API_SECRET:
+#     raise ValueError("Alpaca API credentials not found in environment variables.")
 
 # Convert string to boolean
 ALPACA_PAPER_TRADE_BOOL = ALPACA_PAPER_TRADE.lower() not in ['false', '0', 'no', 'off']
 
-# Initialize clients
-# For trading
+# Initialize Alpaca clients
 trade_client = TradingClientSigned(TRADE_API_KEY, TRADE_API_SECRET, paper=ALPACA_PAPER_TRADE_BOOL)
-# For historical market data
 stock_historical_data_client = StockHistoricalDataClientSigned(TRADE_API_KEY, TRADE_API_SECRET)
-# For streaming market data
 stock_data_stream_client = StockDataStream(TRADE_API_KEY, TRADE_API_SECRET, url_override=STREAM_DATA_WSS)
-# For option historical data
 option_historical_data_client = OptionHistoricalDataClientSigned(api_key=TRADE_API_KEY, secret_key=TRADE_API_SECRET)
-# For corporate actions data
 corporate_actions_client = CorporateActionsClientSigned(api_key=TRADE_API_KEY, secret_key=TRADE_API_SECRET)
-# For crypto historical data
 crypto_historical_data_client = CryptoHistoricalDataClientSigned(api_key=TRADE_API_KEY, secret_key=TRADE_API_SECRET)
 
-# ----------------------------------------------------------------------------
-# Centralized date parsing helpers
-# ----------------------------------------------------------------------------
+# ============================================================================
+# Helper Functions
+# ============================================================================
+
 def _parse_iso_datetime(value: Optional[str]) -> Optional[datetime]:
     """Parse an ISO-like datetime string into a datetime.
 
@@ -227,9 +192,80 @@ def _month_name_to_number(name: str) -> int:
     except ValueError:
         return datetime.strptime(name.title(), '%b').month
 
-# ============================================================================
-# Account Information Tools
-# ============================================================================
+
+def parse_timeframe_with_enums(timeframe_str: str) -> Optional[TimeFrame]:
+    """Parse timeframe string to TimeFrame object with validation."""
+    try:
+        match = re.match(r'^(\d+)(Min|Hour|Day|Week|Month)$', timeframe_str, re.IGNORECASE)
+        if not match:
+            return None
+
+        amount = int(match.group(1))
+        unit = match.group(2).lower()
+
+        unit_map = {
+            'min': TimeFrameUnit.Minute,
+            'hour': TimeFrameUnit.Hour,
+            'day': TimeFrameUnit.Day,
+            'week': TimeFrameUnit.Week,
+            'month': TimeFrameUnit.Month
+        }
+
+        if unit not in unit_map:
+            return None
+
+        return TimeFrame(amount=amount, unit=unit_map[unit])
+    except Exception:
+        return None
+
+
+def _format_ohlcv_bar(bar, bar_type: str, include_time: bool = True) -> str:
+    """Helper function to format OHLCV bar data consistently."""
+    if not bar:
+        return ""
+
+    time_format = '%Y-%m-%d %H:%M:%S %Z' if include_time else '%Y-%m-%d'
+    time_label = "Timestamp" if include_time else "Date"
+
+    return f"""{bar_type}:
+  Open: ${bar.open:.2f}, High: ${bar.high:.2f}, Low: ${bar.low:.2f}, Close: ${bar.close:.2f}
+  Volume: {bar.volume:,}, {time_label}: {bar.timestamp.strftime(time_format)}
+
+"""
+
+
+def _format_quote_data(quote) -> str:
+    """Helper function to format quote data consistently."""
+    if not quote:
+        return ""
+
+    return f"""Latest Quote:
+  Bid: ${quote.bid_price:.2f} x {quote.bid_size}, Ask: ${quote.ask_price:.2f} x {quote.ask_size}
+  Timestamp: {quote.timestamp.strftime('%Y-%m-%d %H:%M:%S %Z')}
+
+"""
+
+
+def _format_trade_data(trade) -> str:
+    """Helper function to format trade data consistently."""
+    if not trade:
+        return ""
+
+    optional_fields = []
+    if hasattr(trade, 'exchange') and trade.exchange:
+        optional_fields.append(f"Exchange: {trade.exchange}")
+    if hasattr(trade, 'conditions') and trade.conditions:
+        optional_fields.append(f"Conditions: {trade.conditions}")
+    if hasattr(trade, 'id') and trade.id:
+        optional_fields.append(f"ID: {trade.id}")
+
+    optional_str = f", {', '.join(optional_fields)}" if optional_fields else ""
+
+    return f"""Latest Trade:
+            Price: ${trade.price:.2f}, Size: {trade.size}{optional_str}
+            Timestamp: {trade.timestamp.strftime('%Y-%m-%d %H:%M:%S %Z')}
+            """
+
 
 @mcp.tool()
 async def get_account_info() -> str:
@@ -648,7 +684,7 @@ def _format_quote_data(quote) -> str:
   Bid: ${quote.bid_price:.2f} x {quote.bid_size}, Ask: ${quote.ask_price:.2f} x {quote.ask_size}
   Timestamp: {quote.timestamp.strftime('%Y-%m-%d %H:%M:%S %Z')}
 
-"""
+    """
 
 def _format_trade_data(trade) -> str:
     """Helper function to format trade data consistently."""
@@ -669,7 +705,7 @@ def _format_trade_data(trade) -> str:
   Price: ${trade.price:.2f}, Size: {trade.size}{optional_str}
   Timestamp: {trade.timestamp.strftime('%Y-%m-%d %H:%M:%S %Z')}
 
-"""
+    """
 
 @mcp.tool()
 async def get_stock_snapshot(
@@ -1491,7 +1527,6 @@ async def cancel_order_by_id(order_id: str) -> str:
 
 # =======================================================================================
 # Position Management Tools
-# Ref: https://alpaca.markets/sdks/python/api_reference/trading/positions.html#positions
 # =======================================================================================
 
 @mcp.tool()
@@ -2828,6 +2863,70 @@ def _validate_amount(amount: int, unit: TimeFrameUnit) -> bool:
         return False
         
     return True
+
+
+def parse_arguments():
+    """Parse command line arguments for transport configuration."""
+    import argparse
+    parser = argparse.ArgumentParser(description="Alpaca MCP Server")
+    parser.add_argument(
+        "--transport",
+        choices=["stdio", "http", "sse"],
+        default="stdio",
+        help="Transport method to use (default: stdio). Note: WebSocket not supported, use HTTP for remote connections"
+    )
+    parser.add_argument(
+        "--host",
+        default="127.0.0.1",
+        help="Host to bind the server to for HTTP/SSE transport (default: 127.0.0.1)"
+    )
+    parser.add_argument(
+        "--port",
+        type=int,
+        default=8000,
+        help="Port to bind the server to for HTTP/SSE transport (default: 8000)"
+    )
+    return parser.parse_args()
+
+
+def setup_transport_config(args):
+    """Setup transport configuration based on command line arguments."""
+    if args.transport == "http":
+        return {
+            "transport": "http",
+            "host": args.host,
+            "port": args.port
+        }
+    elif args.transport == "sse":
+        print(f"Warning: SSE transport is deprecated. Consider using HTTP transport instead.")
+        return {
+            "transport": "sse",
+            "host": args.host,
+            "port": args.port
+        }
+    else:
+        return {
+            "transport": "stdio"
+        }
+
+
+# ============================================================================
+# Compatibility wrapper for CLI
+# ============================================================================
+
+class AlpacaMCPServer:
+    """Compatibility wrapper to maintain CLI interface."""
+
+    def __init__(self, config_file: Optional[Path] = None):
+        """Initialize server (config_file parameter is for compatibility only)."""
+        pass
+
+    def run(self, transport: str = "stdio", host: str = "127.0.0.1", port: int = 8000) -> None:
+        """Run the MCP server with specified transport."""
+        if transport == "stdio":
+            mcp.run()
+        else:
+            mcp.run(transport=transport, host=host, port=port)
 
 
 # Run the server

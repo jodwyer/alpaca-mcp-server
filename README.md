@@ -1,11 +1,88 @@
-# Alpaca MCP Server
+<p align="center" style="background:#F7F7F7;padding:32px;border-radius:16px;margin-bottom:32px;">
+  <img src="assets/01-primary-alpaca-logo.png" alt="Alpaca logo" style="width:220px;margin-bottom:24px;">
+  <span style="display:block;color:#101010;font-size:24px;font-weight:700;margin-bottom:12px;">Alpaca MCP Server</span>
+  <span style="display:block;color:#101010;font-size:16px;margin-bottom:24px;">A comprehensive Model Context Protocol (MCP) server for Alpaca's Trading API. Enable natural language trading operations through AI assistants like Claude, Cursor, and VS Code. Supports stocks, options, crypto, portfolio management, and real-time market data.</span>
+  <span style="display:flex;flex-direction:column;gap:14px;align-items:center;">
+    <span align="center" style="display:inline-flex;flex-wrap:wrap;gap:12px;justify-content:center;">
+      <a href="https://x.com/alpacahq?lang=en" style="text-decoration:none;padding:10px 18px;border-radius:8px;border:2px solid #E4E4E7;background:transparent;color:#101010;font-weight:600;">X </a>
+      <a href="https://www.linkedin.com/company/alpacamarkets/" style="text-decoration:none;padding:10px 18px;border-radius:8px;border:2px solid #E4E4E7;background:transparent;color:#101010;font-weight:600;">LinkedIn</a>
+      <a href="https://www.reddit.com/r/alpacamarkets/" style="text-decoration:none;padding:10px 18px;border-radius:8px;border:2px solid #E4E4E7;background:transparent;color:#101010;font-weight:600;">Reddit</a>
+      <a href="https://alpaca.markets/slack" style="text-decoration:none;padding:10px 18px;border-radius:8px;border:2px solid #E4E4E7;background:transparent;color:#101010;font-weight:600;">Slack</a>
+    </span>
+    <span align="center" style="display:inline-flex;flex-wrap:wrap;gap:12px;justify-content:center;">
+      <a href="https://forum.alpaca.markets/" style="text-decoration:none;padding:10px 18px;border-radius:8px;border:2px solid #E4E4E7;background:transparent;color:#101010;font-weight:600;">Alpaca Forum</a>
+      <a href="https://docs.alpaca.markets/docs/getting-started" style="text-decoration:none;padding:10px 18px;border-radius:8px;border:2px solid #E4E4E7;background:transparent;color:#101010;font-weight:600;">API Docs</a>
+      <a href="https://alpaca.markets/sdks/python/" style="text-decoration:none;padding:10px 18px;border-radius:8px;border:2px solid #E4E4E7;background:transparent;color:#101010;font-weight:600;">Python SDK</a>
+    </span>
+  </span>
+</p>
 
-This is a Model Context Protocol (MCP) server implementation for Alpaca's Trading API. It enables large language models (LLMs) on Claude Desktop, Cursor, or VScode to interact with Alpaca's trading infrastructure using natural language (English). This server supports stock trading, options trading, portfolio management, watchlist handling, and real-time market data access.
+
+## Table of Contents
+
+- [Quick Start](#quick-start)
+- [Prerequisites](#prerequisites)
+- [Getting Your API Keys](#getting-your-api-keys)
+- [Features](#features)
+- [Example Natural Language Queries](#example-natural-language-queries)
+- [Example Outputs](#example-outputs)
+- [Installation Methods](#installation-methods)
+- [MCP Client Configuration](#mcp-client-configuration)
+- [HTTP Transport for Remote Usage](#http-transport-for-remote-usage)
+- [Available Tools](#available-tools)
+- [Security Notice](#security-notice)
+- [License](#license)
+
+## Quick Start
+
+**One-click installation with uvx from PyPI:**
+
+```bash
+# Install and configure
+uvx alpaca-mcp-server init
+
+# Start the server
+uvx alpaca-mcp-server serve
+```
+
+**Then add to your MCP client config** :
+
+**Config file locations:**
+- **Claude Desktop**: `~/Library/Application Support/Claude/claude_desktop_config.json` (Mac) or `%APPDATA%\Claude\claude_desktop_config.json` (Windows)
+- **Cursor**: `~/.cursor/mcp.json` (Mac/Linux) or `%USERPROFILE%\.cursor\mcp.json` (Windows)
+
+```json
+{
+  "mcpServers": {
+    "alpaca": {
+      "command": "uvx",
+      "args": ["alpaca-mcp-server", "serve"],
+      "env": {
+        "ALPACA_API_KEY": "your_api_key",
+        "ALPACA_SECRET_KEY": "your_secret_key"
+      }
+    }
+  }
+}
+```
+
+## Prerequisites
+
+- **Python 3.10+** 
+- **Alpaca Trading API keys** (free paper trading account)
+- **MCP client** (Claude Desktop, Cursor, VS Code, etc.)
+
+## Getting Your API Keys
+
+1. Visit [Alpaca Markets](https://app.alpaca.markets/paper/dashboard/overview)
+2. Create a free paper trading account
+3. Generate API keys from the dashboard
+4. Use these keys when running `uvx alpaca-mcp-server init`
 
 ## Features
 
 - **Market Data**
-  - Real-time quotes, trades, and price bars for stocks
+  - Real-time quotes, trades, and price bars for stocks, crypto, and options
   - Historical data with flexible timeframes (1Min to 1Month)
   - Comprehensive stock snapshots and trade-level history
   - Option contract quotes and Greeks
@@ -16,7 +93,7 @@ This is a Model Context Protocol (MCP) server implementation for Alpaca's Tradin
   - Get detailed info on individual holdings
   - Liquidate all or partial positions by share count or percentage
 - **Order Management**
-  - Place stock, crypto, and option orders
+  - Place stocks, ETFs, crypto, and options orders
   - Support for market, limit, stop, stop-limit, and trailing-stop orders
   - Cancel orders individually or in bulk
   - Retrieve full order history
@@ -36,45 +113,247 @@ This is a Model Context Protocol (MCP) server implementation for Alpaca's Tradin
   - Create, update, and view personal watchlists
   - Manage multiple watchlists for tracking assets
 - **Asset Search**
-  - Query details for stocks, crypto, and other Alpaca-supported assets
+  - Query details for stocks, ETFs, crypto, and options
   - Filter assets by status, class, exchange, and attributes
 
-## Getting Started
-### 0. Prerequisites
+## Example Natural Language Queries
 
-- Python (version requirements can be found at: https://modelcontextprotocol.io/quickstart/server)
-- GitHub account
-- Alpaca API keys (with paper or live trading access)
-- Claude for Desktop or another compatible MCP client
+<details open>
+<summary><b>Basic Trading</b></summary>
 
-### 1. Installation
 
-1. Clone the repository and navigate to the directory:
-   ```bash
-   git clone https://github.com/alpacahq/alpaca-mcp-server.git
-   cd alpaca-mcp-server
-   ```
+1. What's my current account balance and buying power on Alpaca?
+2. Show me my current positions in my Alpaca account.
+3. Buy 5 shares of AAPL at market price.
+4. Sell 5 shares of TSLA with a limit price of $300.
+5. Cancel all open stock orders.
+6. Cancel the order with ID abc123.
+7. Liquidate my entire position in GOOGL.
+8. Close 10% of my position in NVDA.
+9. Place a limit order to buy 100 shares of MSFT at $450.
+10. Place a market order to sell 25 shares of META.
 
-2. Create and activate a virtual environment and Install the required packages:
+</details>
 
-    **Option A: Using pip (traditional)**
+<details>
+<summary><b>Crypto Trading</b></summary>
 
-    ```bash
-    python3 -m venv myvenv
-    source myvenv/bin/activate  # On Windows: myvenv\Scripts\activate
-    pip install -r requirements.txt
-    ```
+11. Place a market order to buy 0.01 ETH/USD.
+12. Place a limit order to sell 0.01 BTC/USD at $110,000.
 
-    **Option B: Using uv (modern, faster)**
+</details>
 
-    To use uv, you'll first need to install it. See the [official uv installation guide](https://docs.astral.sh/uv/getting-started/installation/) for detailed installation instructions for your platform.
-    ```bash
-    uv venv myvenv
-    source myvenv/bin/activate # On Windows: myvenv\Scripts\activate
-    uv pip install -r requirements.txt
-    ```
-    **Note:** The virtual environment will use the Python version that was used to create it. If you run the command with Python 3.10 or newer, your virtual environment will also use Python 3.10+. If you want to confirm the version, you can run `python3 --version` after activating the virtual environment. 
+<details>
+<summary><b>Option Trading</b></summary>
 
+13. Show me available option contracts for AAPL expiring next month.
+14. Get the latest quote for the AAPL250613C00200000 option.
+15. Retrieve the option snapshot for the SPY250627P00400000 option.
+16. Liquidate my position in 2 contracts of QQQ calls expiring next week.
+17. Place a market order to buy 1 call option on AAPL expiring next Friday.
+18. What are the option Greeks for the TSLA250620P00500000 option?
+19. Find TSLA option contracts with strike prices within 5% of the current market price.
+20. Get SPY call options expiring the week of June 16th, 2025, within 10% of market price.
+21. Place a bull call spread using AAPL June 6th options: one with a 190.00 strike and the other with a 200.00 strike.
+22. Exercise my NVDA call option contract NVDA250919C001680.
+
+</details>
+
+<details>
+<summary><b>Market Information</b></summary>
+
+23. What are the market open and close times today?
+24. Show me the market calendar for next week.
+25. Show me recent cash dividends and stock splits for AAPL, MSFT, and GOOGL in the last 3 months.
+26. Get all corporate actions for SPY including dividends, splits, and any mergers in the past year.
+27. What are the upcoming corporate actions scheduled for SPY in the next 6 months?
+
+</details>
+
+<details>
+<summary><b>Historical & Real-time Data</b></summary>
+
+28. Show me AAPL's daily price history for the last 5 trading days.
+29. What was the closing price of TSLA yesterday?
+30. Get the latest bar for GOOGL.
+31. What was the latest trade price for NVDA?
+32. Show me the most recent quote for MSFT.
+33. Retrieve the last 100 trades for AMD.
+34. Show me 1-minute bars for AMZN from the last 2 hours.
+35. Get 5-minute intraday bars for TSLA from last Tuesday through last Friday.
+36. Get a comprehensive stock snapshot for AAPL showing latest quote, trade, minute bar, daily bar, and previous daily bar all in one view.
+37. Compare market snapshots for TSLA, NVDA, and MSFT to analyze their current bid/ask spreads, latest trade prices, and daily performance.
+
+</details>
+
+<details>
+<summary><b>Orders</b></summary>
+
+38. Show me all my open and filled orders from this week.
+39. What orders do I have for AAPL?
+40. List all limit orders I placed in the past 3 days.
+41. Filter all orders by status: filled.
+42. Get me the order history for yesterday.
+
+</details>
+
+<details>
+<summary><b>Watchlists</b></summary>
+
+> At this moment, you can only view and update trading watchlists created via Alpaca’s Trading API through the API itself
+43. Create a new watchlist called "Tech Stocks" with AAPL, MSFT, and NVDA.
+44. Update my "Tech Stocks" watchlist to include TSLA and AMZN.
+45. What stocks are in my "Dividend Picks" watchlist?
+46. Remove META from my "Growth Portfolio" watchlist.
+47. List all my existing watchlists.
+
+</details>
+
+<details>
+<summary><b>Asset Information</b></summary>
+
+48. Search for details about the asset 'AAPL'.
+49. Show me the top 5 tradable crypto assets by trading volume.
+50. Get all NASDAQ active US equity assets and filter the results to show only tradable securities
+
+</details>
+
+<details>
+<summary><b>Combined Scenarios</b></summary>
+
+51. Get today's market clock and show me my buying power before placing a limit buy order for TSLA at $340.
+52. Place a bull call spread with SPY July 3rd options: buy one 5% above and sell one 3% below the current SPY price.
+
+</details>
+
+## Example Outputs
+
+<details>
+<summary><b>View Example Outputs</b></summary>
+
+The MCP server provides detailed, well-formatted responses for various trading queries. Here are some examples:
+
+### Option Greeks Analysis
+Query: "What are the option Greeks for TSLA250620P00500000?"
+
+Response:
+Option Details:
+- Current Bid/Ask: $142.62 / $143.89
+- Last Trade: $138.85
+- Implied Volatility: 92.54%
+
+Greeks:
+- Delta: -0.8968 (Very Bearish)
+- Gamma: 0.0021 (Low Rate of Change)
+- Theta: -0.2658 (Time Decay: $26.58/day)
+- Vega: 0.1654 (Volatility Sensitivity)
+- Rho: -0.3060 (Interest Rate Sensitivity)
+
+Key Insights:
+- High Implied Volatility (92.54%)
+- Deep In-the-Money (Delta: -0.90)
+- Significant Time Decay ($27/day)
+
+### Multi-Leg Option Order
+Query: "Place a bull call spread using AAPL June 6th options: one with a 190.00 strike and the other with a 200.00 strike."
+
+Response:
+Order Details:
+- Order ID: fc1c04b1-8afa-4b2d-aab1-49613bbed7cb
+- Order Class: Multi-Leg (MLEG)
+- Status: Pending New
+- Quantity: 1 spread
+
+Spread Legs:
+1. Long Leg (BUY):
+   - AAPL250606C00190000 ($190.00 strike)
+   - Status: Pending New
+
+2. Short Leg (SELL):
+   - AAPL250606C00200000 ($200.00 strike)
+   - Status: Pending New
+
+Strategy Summary:
+- Max Profit: $10.00 per spread
+- Max Loss: Net debit paid
+- Breakeven: $190 + net debit paid
+
+These examples demonstrate the server's ability to provide:
+- Detailed market data analysis
+- Comprehensive order execution details
+- Clear strategy explanations
+- Well-formatted, easy-to-read responses
+
+</details>
+
+## Installation Methods
+
+### 1. Choose Your Installation Method
+This section shows manual installation of Alpaca MCP Server.
+
+#### Method 1: uvx
+
+  ```bash
+  # Install and configure
+  uvx alpaca-mcp-server init
+
+  # Start the server
+  uvx alpaca-mcp-server serve
+  ```
+
+#### Method 2: pip
+
+  ```bash
+  # Install from PyPI
+  pip install alpaca-mcp-server
+
+  # Configure and run
+  alpaca-mcp init
+  alpaca-mcp serve
+  ```
+
+#### Method 3: Docker
+
+  ```bash
+  # Run with Docker
+  docker run -e ALPACA_API_KEY=your_key -e ALPACA_SECRET_KEY=your_secret alpaca/mcp-server
+  ```
+
+#### Method 4: Development Installation
+
+<details>
+<summary><b>Expand for Development Installation Instructions</b></summary>
+
+  **Option A: Using pip (traditional)**
+  ```bash
+  # Clone and install for development
+  git clone https://github.com/idsts2670/alpaca-mcp-server
+  # Move to the cloned repository
+  cd alpaca-mcp-server
+  # Create the virtual environment first
+  python3 -m venv .venv
+  # Activate the virtual environment
+  source .venv/bin/activate
+  # Configure the 
+  pip install -e .
+  ```
+
+  **Option B: Using uv (modern, faster)**
+
+  To use uv, you'll first need to install it. See the [official uv installation guide](https://docs.astral.sh/uv/getting-started/installation/) for detailed installation instructions for your platform.
+  ```bash
+  # Clone and install for development
+  git clone https://github.com/idsts2670/alpaca-mcp-server
+  # Create the virtual environment first
+  uv venv .venv
+  # Activate the virtual environment
+  source .venv/bin/activate # On Windows: .venv\Scripts\activate
+  # Configures the development environment
+  uv pip install -e .
+  ```
+  **Note:** The virtual environment will use the Python version that was used to create it. If you run the command with Python 3.10 or newer, your virtual environment will also use Python 3.10+. If you want to confirm the version, you can run `python3 --version` after activating the virtual environment. 
+
+</details>
 
 ### Project Structure
 
@@ -111,7 +390,7 @@ alpaca-mcp-server/          ← This is the workspace folder (= project root)
    ALPACA_SECRET_KEY = "your_alpaca_secret_key_for_paper_account"
    ALPACA_PAPER_TRADE = True
    TRADE_API_URL = None
-   TRDE_API_WSS = None
+   TRADE_API_WSS = None
    DATA_API_URL = None
    STREAM_DATA_WSS = None
    ```
@@ -120,14 +399,19 @@ alpaca-mcp-server/          ← This is the workspace folder (= project root)
 
 Open a terminal in the project root directory and run the following command:
 
+**For the case of configurating with uvx from PyPI 
+```bash
+uvx alpaca-mcp-server serve # When configuring with `uvx` from PyPI
+```
+
 **For local usage (default - stdio transport):**
 ```bash
-python alpaca_mcp_server.py
+python alpaca_mcp_server.py # When configuring with `uv` or `pip`
 ```
 
 **For remote usage (HTTP transport):**
 ```bash
-python alpaca_mcp_server.py --transport http
+python alpaca_mcp_server.py --transport http # When configuring with `uv` or `pip`
 ```
 
 **Available transport options:**
@@ -139,38 +423,71 @@ python alpaca_mcp_server.py --transport http
 
 **Note:** For more information about MCP transport methods, see the [official MCP transport documentation](https://modelcontextprotocol.io/docs/concepts/transports).
 
-### 4. API Key Configuration for Live Trading
+### 4. Switching API Keys for Live Trading
 
-This MCP server connects to Alpaca's **paper trading API** by default for safe testing.
-To enable **live trading with real funds**, update the following configuration files:
+This MCP server connects to Alpaca's **paper Trading API** by default for safe testing.
+To enable **live trading with real funds** or switch between different accounts, you need to update API credentials in **two places**:
 
-### Set Your API Credentials in Two Places:
+1. **`.env` file** (used by MCP server)
+2. **MCP client config JSON** (used by MCP client like Claude Desktop, Cursor, etc.)
 
-1. **Update environment file in the project directory**
+**Important:** The MCP client configuration overrides the `.env` file. When using an MCP client, the credentials in the client's JSON config take precedence.
 
-    Provide your live account keys as environment variables in the `.env` file:
-    ```
-    ALPACA_API_KEY = "your_alpaca_api_key_for_live_account"
-    ALPACA_SECRET_KEY = "your_alpaca_secret_key_for_live_account"
-    ALPACA_PAPER_TRADE = False
-    TRADE_API_URL = None
-    TRADE_API_WSS = None
-    DATA_API_URL = None
-    STREAM_DATA_WSS = None
-    ```
+#### Place 1: Update `.env` File (Used by MCP Server)
 
-2. **Update Configuration file**
+**For direct CLI usage or when running the server directly:**
 
-   For example, when using Claude Desktop, provide your live account keys as environment variables in `claude_desktop_config.json`:
+**Option 1: Run the init command again** to update your `.env` file:
+```bash
+uvx alpaca-mcp-server init
+# Follow the prompts to update your keys and toggle paper/live trading
+```
 
+**Option 2: Manually edit** the `.env` file in your current directory:
+```
+ALPACA_API_KEY = "your_alpaca_api_key_for_live_account"
+ALPACA_SECRET_KEY = "your_alpaca_secret_key_for_live_account"
+ALPACA_PAPER_TRADE = False
+TRADE_API_URL = None
+TRADE_API_WSS = None
+DATA_API_URL = None
+STREAM_DATA_WSS = None
+```
+
+#### Place 2: Update MCP Client Config (Used by MCP Client)
+
+**For MCP client users (Claude Desktop, Cursor, VS Code, etc.):**
+
+**Step 1: Edit your MCP client configuration file**:
+   - **Claude Desktop**: `~/Library/Application Support/Claude/claude_desktop_config.json` (Mac) or `%APPDATA%\Claude\claude_desktop_config.json` (Windows)
+   - **Cursor**: `~/.cursor/mcp.json`
+   - **VS Code**: `.vscode/mcp.json` (workspace) or user `settings.json`
+
+**Step 2: Update the API keys** in the `env` section:
+
+   **For uvx installations:**
+   ```json
+   {
+     "mcpServers": {
+       "alpaca": {
+         "command": "uvx",
+         "args": ["alpaca-mcp-server", "serve"],
+         "env": {
+           "ALPACA_API_KEY": "your_alpaca_api_key_for_live_account",
+           "ALPACA_SECRET_KEY": "your_alpaca_secret_key_for_live_account",
+         }
+       }
+     }
+   }
+   ```
+
+   **For legacy/development installations:**
    ```json
    {
      "mcpServers": {
        "alpaca": {
          "command": "<project_root>/venv/bin/python",
-         "args": [
-           "/path/to/alpaca_mcp_server.py"
-         ],
+         "args": ["/path/to/alpaca_mcp_server.py"],
          "env": {
            "ALPACA_API_KEY": "your_alpaca_api_key_for_live_account",
            "ALPACA_SECRET_KEY": "your_alpaca_secret_key_for_live_account"
@@ -180,24 +497,55 @@ To enable **live trading with real funds**, update the following configuration f
    }
    ```
 
+**Step 3: Restart your MCP client** (Claude Desktop, Cursor, etc.)
+
+
 ## MCP Client Configuration
 
 Below you'll find step-by-step guides for connecting the Alpaca MCP server to various MCP clients. Choose the section that matches your preferred development environment or AI assistant.
 
-### Claude Desktop Usage
+<details open>
+<summary><b>Claude Desktop Configuration</b></summary>
 
-To use Alpaca MCP Server with Claude Desktop, please follow the steps below. The official Claude Desktop setup document is available here: https://modelcontextprotocol.io/quickstart/user
+### Claude Desktop Configuration
 
-#### Configure Claude Desktop
+#### Method 1: uvx (Recommended)
 
-1. Open Claude Desktop
-2. Navigate to: `Settings → Developer → Edit Config`
-3. Update your `claude_desktop_config.json`:
+**Simple and modern approach:**
 
-  **Note:**\
-    Replace <project_root> with the path to your cloned alpaca-mcp-server directory. This should point to the Python executable inside the virtual environment you created with `python3 -m venv venv` in the terminal.
+1. Install and configure the server:
+   ```bash
+   uvx alpaca-mcp-server init
+   ```
 
-**For local usage (stdio transport - recommended):**
+2. Open Claude Desktop → Settings → Developer → Edit Config
+
+3. Add this configuration:
+   ```json
+   {
+     "mcpServers": {
+       "alpaca": {
+         "command": "uvx",
+         "args": ["alpaca-mcp-server", "serve"],
+         "env": {
+           "ALPACA_API_KEY": "your_alpaca_api_key",
+           "ALPACA_SECRET_KEY": "your_alpaca_secret_key"
+         }
+       }
+     }
+   }
+   ```
+
+4. Restart Claude Desktop and start trading!
+
+<details>
+<summary><b>Method 2: Legacy Installation (Deprecated)</b></summary>
+
+#### Method 2: Legacy Installation (Deprecated)
+
+> ⚠️ **This method is deprecated.** Please use the uvx method above for new installations.
+
+**For existing installations (stdio transport):**
 ```json
 {
   "mcpServers": {
@@ -231,6 +579,13 @@ To use Alpaca MCP Server with Claude Desktop, please follow the steps below. The
 }
 ```
 
+</details>
+
+</details>
+
+<details>
+<summary><b>Claude Code Usage</b></summary>
+
 ### Claude Code Usage
 
 To use Alpaca MCP Server with Claude Code, please follow the steps below.
@@ -250,6 +605,11 @@ claude mcp add alpaca \
 The Claude MCP CLI tool needs to be installed separately. Check following the official pages for availability and installation instructions
 * [Learn how to set up MCP with Claude Code](https://docs.anthropic.com/en/docs/claude-code/mcp)
 * [Install, authenticate, and start using Claude Code on your development machine](https://docs.anthropic.com/en/docs/claude-code/setup)
+
+</details>
+
+<details>
+<summary><b>Cursor Usage</b></summary>
 
 ### Cursor Usage
 
@@ -289,6 +649,11 @@ Create or edit `~/.cursor/mcp.json` (macOS/Linux) or `%USERPROFILE%\.cursor\mcp.
 3. Configure with the same details as the JSON method above
 
 **Note:** Replace the paths with your actual project directory paths and API credentials.
+
+</details>
+
+<details>
+<summary><b>VS Code Usage</b></summary>
 
 ### VS Code Usage
 
@@ -381,6 +746,11 @@ Specify the server in the `mcp` VS Code user settings (`settings.json`) to enabl
 }
 ```
 
+</details>
+
+<details>
+<summary><b>PyCharm Usage</b></summary>
+
 ### PyCharm Usage
 
 To use the Alpaca MCP Server with PyCharm, please follow the steps below. The official setup guide for configuring the MCP Server in PyCharm is available here: https://www.jetbrains.com/help/ai-assistant/configure-an-mcp-server.html
@@ -406,6 +776,11 @@ PyCharm supports MCP servers through its integrated MCP client functionality. Th
    MCP_CLIENT=pycharm
    ```
 
+</details>
+
+<details>
+<summary><b>Docker Usage</b></summary>
+
 ### Docker Usage
 
 To use Alpaca MCP Server with Docker, please follow the steps below.
@@ -413,16 +788,7 @@ To use Alpaca MCP Server with Docker, please follow the steps below.
 **Prerequisite:**  
 You must have [Docker installed](https://docs.docker.com/get-docker/) on your system.
 
-#### Run the latest published image (recommended for most users)
-```bash
-docker run -it --rm \
-  -e ALPACA_API_KEY=your_alpaca_api_key \
-  -e ALPACA_SECRET_KEY=your_alpaca_secret_key \
-  ghcr.io/chand1012/alpaca-mcp-server:latest
-```
-This pulls and runs the latest published version of the server. Replace `your_alpaca_api_key` and `your_alpaca_secret_key` with your actual keys. If the server exposes a port (e.g., 8080), add `-p 8080:8080` to the command.
-
-#### Build and run locally (for development or custom changes)
+#### Build and run locally (recommended)
 ```bash
 docker build -t alpaca-mcp-server .
 docker run -it --rm \
@@ -430,7 +796,22 @@ docker run -it --rm \
   -e ALPACA_SECRET_KEY=your_alpaca_secret_key \
   alpaca-mcp-server
 ```
-Use this if you want to run a modified or development version of the server.
+This builds and runs the server from your local source code.
+
+#### HTTP mode example
+```bash
+docker run --rm -p 8000:8000 alpaca-mcp-server --transport http
+```
+
+#### Alternative: Use published image (if available)
+```bash
+docker run --pull=always -it --rm \
+  -e ALPACA_API_KEY=your_alpaca_api_key \
+  -e ALPACA_SECRET_KEY=your_alpaca_secret_key \
+  ghcr.io/alpacahq/alpaca-mcp-server:latest
+```
+**Note:** Verify the published image exists and is maintained before using.
+
 
 #### Using with Claude Desktop
 ```json
@@ -444,7 +825,7 @@ Use this if you want to run a modified or development version of the server.
         "--rm",
         "-e", "ALPACA_API_KEY",
         "-e", "ALPACA_SECRET_KEY",
-        "ghcr.io/chand1012/alpaca-mcp-server:latest"
+        "alpaca-mcp-server"
       ],
       "env": {
         "ALPACA_API_KEY": "your_alpaca_api_key",
@@ -454,14 +835,81 @@ Use this if you want to run a modified or development version of the server.
   }
 }
 ```
-Environment variables can be set either with `-e` flags or in the `"env"` object, but not both. For Claude Desktop, use the `"env"` object.
+Provide values via the MCP client's env block, and use -e VAR flags to forward them into the Docker container. Avoid hardcoding secrets directly in args.
+
+#### Alternative credential methods
+```bash
+# Using an env file
+docker run --env-file .env alpaca-mcp-server
+
+# Bind mounting a .env file
+docker run -v $(pwd)/.env:/app/.env:ro alpaca-mcp-server
+```
 
 **Security Note:**  Never share your API keys or commit them to public repositories. Be cautious when passing secrets as environment variables, especially in shared or production environments.
 
 **For more advanced Docker usage:**  See the [official Docker documentation](https://docs.docker.com/).
 
+</details>
+
+## HTTP Transport for Remote Usage
+
+<details>
+<summary><b>Expand for Remote Server Setup Instructions</b></summary>
+
+For users who need to run the MCP server on a remote machine (e.g., Ubuntu server) and connect from a different machine (e.g., Windows Claude Desktop), use HTTP transport:
+
+### Server Setup (Remote Machine)
+```bash
+# Start server with HTTP transport (default: 127.0.0.1:8000)
+python alpaca_mcp_server.py --transport http
+
+# Start server with custom host/port for remote access
+python alpaca_mcp_server.py --transport http --host 0.0.0.0 --port 9000
+
+# For systemd service (example from GitHub issue #6)
+# Update your start script to use HTTP transport
+#!/bin/bash
+cd /root/alpaca-mcp-server
+source venv/bin/activate
+exec python3 -u alpaca_mcp_server.py --transport http --host 0.0.0.0 --port 8000
+```
+
+**Remote Access Options:**
+1. **Direct binding**: Use `--host 0.0.0.0` to bind to all interfaces for direct remote access
+2. **SSH tunneling**: `ssh -L 8000:localhost:8000 user@your-server` for secure access (recommended for localhost binding)
+3. **Reverse proxy**: Use nginx/Apache to expose the service securely with authentication
+
+### Client Setup
+Update your Claude Desktop configuration to use HTTP:
+```json
+{
+  "mcpServers": {
+    "alpaca": {
+      "transport": "http",
+      "url": "http://your-server-ip:8000/mcp",
+      "env": {
+        "ALPACA_API_KEY": "your_alpaca_api_key",
+        "ALPACA_SECRET_KEY": "your_alpaca_secret_key"
+      }
+    }
+  }
+}
+```
+
+### Troubleshooting HTTP Transport Issues
+- **Port not listening**: Ensure the server started successfully and check firewall settings
+- **Connection refused**: Verify the server is running on the expected host:port
+- **ENOENT errors**: Make sure you're using the updated server command with `--transport http`
+- **Remote access**: Use `--host 0.0.0.0` for direct access, or SSH tunneling for localhost binding
+- **Port conflicts**: Use `--port <PORT>` to specify a different port if default is busy
+
+</details>
 
 ## Available Tools
+
+<details>
+<summary><b>View All Available Tools</b></summary>
 
 ### Account & Positions
 
@@ -516,185 +964,7 @@ Environment variables can be set either with `-e` flags or in the `"env"` object
 * `get_asset_info(symbol)` – Search asset metadata
 * `get_all_assets(status=None, asset_class=None, exchange=None, attributes=None)` – List all tradable instruments with filtering options
 
-## Example Natural Language Queries
-See the "Example Queries" section below for real examples covering everything from trading to corporate data to option strategies.
-
-### Basic Trading
-1. What's my current account balance and buying power on Alpaca?
-2. Show me my current positions in my Alpaca account.
-3. Buy 5 shares of AAPL at market price.
-4. Sell 5 shares of TSLA with a limit price of $300.
-5. Cancel all open stock orders.
-6. Cancel the order with ID abc123.
-7. Liquidate my entire position in GOOGL.
-8. Close 10% of my position in NVDA.
-9. Place a limit order to buy 100 shares of MSFT at $450.
-10. Place a market order to sell 25 shares of META.
-
-### Crypto Trading
-11. Place a market order to buy 0.01 ETH/USD.
-12. Place a limit order to sell 0.01 BTC/USD at $110,000.
-
-### Option Trading
-13. Show me available option contracts for AAPL expiring next month.
-14. Get the latest quote for the AAPL250613C00200000 option.
-15. Retrieve the option snapshot for the SPY250627P00400000 option.
-16. Liquidate my position in 2 contracts of QQQ calls expiring next week.
-17. Place a market order to buy 1 call option on AAPL expiring next Friday.
-18. What are the option Greeks for the TSLA250620P00500000 option?
-19. Find TSLA option contracts with strike prices within 5% of the current market price.
-20. Get SPY call options expiring the week of June 16th, 2025, within 10% of market price.
-21. Place a bull call spread using AAPL June 6th options: one with a 190.00 strike and the other with a 200.00 strike.
-22. Exercise my NVDA call option contract NVDA250919C001680.
-
-### Market Information
-23. What are the market open and close times today?
-24. Show me the market calendar for next week.
-25. Show me recent cash dividends and stock splits for AAPL, MSFT, and GOOGL in the last 3 months.
-26. Get all corporate actions for SPY including dividends, splits, and any mergers in the past year.
-27. What are the upcoming corporate actions scheduled for SPY in the next 6 months?
-
-### Historical & Real-time Data
-28. Show me AAPL's daily price history for the last 5 trading days.
-29. What was the closing price of TSLA yesterday?
-30. Get the latest bar for GOOGL.
-31. What was the latest trade price for NVDA?
-32. Show me the most recent quote for MSFT.
-33. Retrieve the last 100 trades for AMD.
-34. Show me 1-minute bars for AMZN from the last 2 hours.
-35. Get 5-minute intraday bars for TSLA from last Tuesday through last Friday.
-36. Get a comprehensive stock snapshot for AAPL showing latest quote, trade, minute bar, daily bar, and previous daily bar all in one view.
-37. Compare market snapshots for TSLA, NVDA, and MSFT to analyze their current bid/ask spreads, latest trade prices, and daily performance.
-
-### Orders
-38. Show me all my open and filled orders from this week.
-39. What orders do I have for AAPL?
-40. List all limit orders I placed in the past 3 days.
-41. Filter all orders by status: filled.
-42. Get me the order history for yesterday.
-
-### Watchlists
-> At this moment, you can only view and update trading watchlists created via Alpaca’s Trading API through the API itself
-43. Create a new watchlist called "Tech Stocks" with AAPL, MSFT, and NVDA.
-44. Update my "Tech Stocks" watchlist to include TSLA and AMZN.
-45. What stocks are in my "Dividend Picks" watchlist?
-46. Remove META from my "Growth Portfolio" watchlist.
-47. List all my existing watchlists.
-
-### Asset Information
-48. Search for details about the asset 'AAPL'.
-49. Show me the top 5 tradable crypto assets by trading volume.
-50. Get all NASDAQ active US equity assets and filter the results to show only tradable securities
-
-### Combined Scenarios
-51. Get today's market clock and show me my buying power before placing a limit buy order for TSLA at $340.
-52. Place a bull call spread with SPY July 3rd options: buy one 5% above and sell one 3% below the current SPY price.
-
-## Example Outputs
-
-The MCP server provides detailed, well-formatted responses for various trading queries. Here are some examples:
-
-### Option Greeks Analysis
-Query: "What are the option Greeks for TSLA250620P00500000?"
-
-Response:
-Option Details:
-- Current Bid/Ask: $142.62 / $143.89
-- Last Trade: $138.85
-- Implied Volatility: 92.54%
-
-Greeks:
-- Delta: -0.8968 (Very Bearish)
-- Gamma: 0.0021 (Low Rate of Change)
-- Theta: -0.2658 (Time Decay: $26.58/day)
-- Vega: 0.1654 (Volatility Sensitivity)
-- Rho: -0.3060 (Interest Rate Sensitivity)
-
-Key Insights:
-- High Implied Volatility (92.54%)
-- Deep In-the-Money (Delta: -0.90)
-- Significant Time Decay ($27/day)
-
-### Multi-Leg Option Order
-Query: "Place a bull call spread using AAPL June 6th options: one with a 190.00 strike and the other with a 200.00 strike."
-
-Response:
-Order Details:
-- Order ID: fc1c04b1-8afa-4b2d-aab1-49613bbed7cb
-- Order Class: Multi-Leg (MLEG)
-- Status: Pending New
-- Quantity: 1 spread
-
-Spread Legs:
-1. Long Leg (BUY):
-   - AAPL250606C00190000 ($190.00 strike)
-   - Status: Pending New
-
-2. Short Leg (SELL):
-   - AAPL250606C00200000 ($200.00 strike)
-   - Status: Pending New
-
-Strategy Summary:
-- Max Profit: $10.00 per spread
-- Max Loss: Net debit paid
-- Breakeven: $190 + net debit paid
-
-These examples demonstrate the server's ability to provide:
-- Detailed market data analysis
-- Comprehensive order execution details
-- Clear strategy explanations
-- Well-formatted, easy-to-read responses
-
-The server maintains this level of detail and formatting across all supported queries, making it easy to understand and act on the information provided.
-
-## HTTP Transport for Remote Usage
-
-For users who need to run the MCP server on a remote machine (e.g., Ubuntu server) and connect from a different machine (e.g., Windows Claude Desktop), use HTTP transport:
-
-### Server Setup (Remote Machine)
-```bash
-# Start server with HTTP transport (default: 127.0.0.1:8000)
-python alpaca_mcp_server.py --transport http
-
-# Start server with custom host/port for remote access
-python alpaca_mcp_server.py --transport http --host 0.0.0.0 --port 9000
-
-# For systemd service (example from GitHub issue #6)
-# Update your start script to use HTTP transport
-#!/bin/bash
-cd /root/alpaca-mcp-server
-source venv/bin/activate
-exec python3 -u alpaca_mcp_server.py --transport http --host 0.0.0.0 --port 8000
-```
-
-**Remote Access Options:**
-1. **Direct binding**: Use `--host 0.0.0.0` to bind to all interfaces for direct remote access
-2. **SSH tunneling**: `ssh -L 8000:localhost:8000 user@your-server` for secure access (recommended for localhost binding)
-3. **Reverse proxy**: Use nginx/Apache to expose the service securely with authentication
-
-### Client Setup
-Update your Claude Desktop configuration to use HTTP:
-```json
-{
-  "mcpServers": {
-    "alpaca": {
-      "transport": "http",
-      "url": "http://your-server-ip:8000/mcp",
-      "env": {
-        "ALPACA_API_KEY": "your_alpaca_api_key",
-        "ALPACA_SECRET_KEY": "your_alpaca_secret_key"
-      }
-    }
-  }
-}
-```
-
-### Troubleshooting HTTP Transport Issues
-- **Port not listening**: Ensure the server started successfully and check firewall settings
-- **Connection refused**: Verify the server is running on the expected host:port
-- **ENOENT errors**: Make sure you're using the updated server command with `--transport http`
-- **Remote access**: Use `--host 0.0.0.0` for direct access, or SSH tunneling for localhost binding
-- **Port conflicts**: Use `--port <PORT>` to specify a different port if default is busy
+</details>
 
 ## Security Notice
 
@@ -708,7 +978,7 @@ The user agent for API calls defaults to 'ALPACA-MCP-SERVER' to help Alpaca iden
 
 ## License
 
-MIT
+Apache-2.0
 
 
 ## Disclosure
