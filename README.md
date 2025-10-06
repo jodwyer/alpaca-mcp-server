@@ -163,6 +163,7 @@ uvx alpaca-mcp-server serve
 <details>
 <summary><b>Market Information</b></summary>
 
+> To access the latest 15-minute data, you need to subscribe to the [Algo Trader Plus Plan](https://alpaca.markets/data).
 23. What are the market open and close times today?
 24. Show me the market calendar for next week.
 25. Show me recent cash dividends and stock splits for AAPL, MSFT, and GOOGL in the last 3 months.
@@ -223,7 +224,7 @@ uvx alpaca-mcp-server serve
 <summary><b>Combined Scenarios</b></summary>
 
 51. Get today's market clock and show me my buying power before placing a limit buy order for TSLA at $340.
-52. Place a bull call spread with SPY July 3rd options: buy one 5% above and sell one 3% below the current SPY price.
+52. Place a bull call spread with SPY July 3rd options: sell one 5% above and buy one 3% below the current SPY price.
 
 </details>
 
