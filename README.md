@@ -7,8 +7,7 @@
 [![X](https://img.shields.io/badge/-DCDCDC.svg?style=for-the-badge&logo=x&logoColor=000)](https://x.com/alpacahq?lang=en)
 [![Reddit](https://img.shields.io/badge/-DCDCDC.svg?style=for-the-badge&logo=reddit&logoColor=000)](https://www.reddit.com/r/alpacamarkets/)
 [![Slack](https://img.shields.io/badge/-DCDCDC.svg?style=for-the-badge&logo=slack&logoColor=000)](https://alpaca.markets/slack)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-DCDCDC.svg?style=for-the-badge&logoColor=000)](https://www.linkedin.com/company/alpacamarkets/)
-
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-DCDCDC.svg?style=for-the-badge&logoColor=000)](https://www.linkedin.com/company/alpacamarkets/)\
 [![Forum](https://img.shields.io/badge/Forum-DCDCDC.svg?style=for-the-badge&logo=discourse&logoColor=000)](https://forum.alpaca.markets/)
 [![Docs](https://img.shields.io/badge/Docs-DCDCDC.svg?style=for-the-badge&logoColor=000)](https://docs.alpaca.markets/docs/getting-started)
 [![Python SDK](https://img.shields.io/badge/Python_SDK-DCDCDC.svg?style=for-the-badge&logo=python&logoColor=000)](https://alpaca.markets/sdks/python/)
