@@ -4,13 +4,13 @@
 
 <div align="center">
 
-[![X](https://img.shields.io/badge/X-DCDCDC?logo=x&logoColor=000)](https://x.com/alpacahq?lang=en)
-[![Reddit](https://img.shields.io/badge/Reddit-DCDCDC?logo=reddit&logoColor=000)](https://www.reddit.com/r/alpacamarkets/)
-[![Slack](https://img.shields.io/badge/Slack-DCDCDC?logo=slack&logoColor=000)](https://alpaca.markets/slack)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-DCDCDC)](https://www.linkedin.com/company/alpacamarkets/)
-[![Forum](https://img.shields.io/badge/Forum-DCDCDC?logo=discourse&logoColor=000)](https://forum.alpaca.markets/)
-[![Docs](https://img.shields.io/badge/Docs-DCDCDC)](https://docs.alpaca.markets/docs/getting-started)
-[![Python SDK](https://img.shields.io/badge/Python_SDK-DCDCDC?logo=python&logoColor=000)](https://alpaca.markets/sdks/python/)
+<a href="https://x.com/alpacahq?lang=en" target="_blank"><img src="https://img.shields.io/badge/X-DCDCDC?logo=x&logoColor=000" alt="X"></a>
+<a href="https://www.reddit.com/r/alpacamarkets/" target="_blank"><img src="https://img.shields.io/badge/Reddit-DCDCDC?logo=reddit&logoColor=000" alt="Reddit"></a>
+<a href="https://alpaca.markets/slack" target="_blank"><img src="https://img.shields.io/badge/Slack-DCDCDC?logo=slack&logoColor=000" alt="Slack"></a>
+<a href="https://www.linkedin.com/company/alpacamarkets/" target="_blank"><img src="https://img.shields.io/badge/LinkedIn-DCDCDC" alt="LinkedIn"></a>
+<a href="https://forum.alpaca.markets/" target="_blank"><img src="https://img.shields.io/badge/Forum-DCDCDC?logo=discourse&logoColor=000" alt="Forum"></a>
+<a href="https://docs.alpaca.markets/docs/getting-started" target="_blank"><img src="https://img.shields.io/badge/Docs-DCDCDC" alt="Docs"></a>
+<a href="https://alpaca.markets/sdks/python/" target="_blank"><img src="https://img.shields.io/badge/Python_SDK-DCDCDC?logo=python&logoColor=000" alt="Python SDK"></a>
 
 </div>
 
