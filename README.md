@@ -401,7 +401,7 @@ alpaca-mcp-server/          ← This is the workspace folder (= project root)
 
 Open a terminal in the project root directory and run the following command:
 
-**For the case of configurating with uvx from PyPI 
+**For the case of configurating with uvx from PyPI:**
 ```bash
 uvx alpaca-mcp-server serve # When configuring with `uvx` from PyPI
 ```
@@ -476,7 +476,7 @@ STREAM_DATA_WSS = None
          "args": ["alpaca-mcp-server", "serve"],
          "env": {
            "ALPACA_API_KEY": "your_alpaca_api_key_for_live_account",
-           "ALPACA_SECRET_KEY": "your_alpaca_secret_key_for_live_account",
+           "ALPACA_SECRET_KEY": "your_alpaca_secret_key_for_live_account"
          }
        }
      }
@@ -980,7 +980,7 @@ The user agent for API calls defaults to 'ALPACA-MCP-SERVER' to help Alpaca iden
 
 ## License
 
-Apache-2.0
+MIT License - See [LICENSE](LICENSE) file for details
 
 
 ## Disclosure

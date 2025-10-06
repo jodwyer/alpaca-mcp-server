@@ -140,13 +140,28 @@ mcp = FastMCP("alpaca-trading", log_level=log_level)
 # Convert string to boolean
 ALPACA_PAPER_TRADE_BOOL = ALPACA_PAPER_TRADE.lower() not in ['false', '0', 'no', 'off']
 
-# Initialize Alpaca clients
-trade_client = TradingClientSigned(TRADE_API_KEY, TRADE_API_SECRET, paper=ALPACA_PAPER_TRADE_BOOL)
-stock_historical_data_client = StockHistoricalDataClientSigned(TRADE_API_KEY, TRADE_API_SECRET)
-stock_data_stream_client = StockDataStream(TRADE_API_KEY, TRADE_API_SECRET, url_override=STREAM_DATA_WSS)
-option_historical_data_client = OptionHistoricalDataClientSigned(api_key=TRADE_API_KEY, secret_key=TRADE_API_SECRET)
-corporate_actions_client = CorporateActionsClientSigned(api_key=TRADE_API_KEY, secret_key=TRADE_API_SECRET)
-crypto_historical_data_client = CryptoHistoricalDataClientSigned(api_key=TRADE_API_KEY, secret_key=TRADE_API_SECRET)
+# Client initialization - lazy loading to allow server to start without credentials
+_clients_initialized = False
+trade_client = None
+stock_historical_data_client = None
+stock_data_stream_client = None
+option_historical_data_client = None
+corporate_actions_client = None
+crypto_historical_data_client = None
+
+def _ensure_clients():
+    """Initialize Alpaca clients on first use."""
+    global _clients_initialized, trade_client, stock_historical_data_client, stock_data_stream_client
+    global option_historical_data_client, corporate_actions_client, crypto_historical_data_client
+    
+    if not _clients_initialized:
+        trade_client = TradingClientSigned(TRADE_API_KEY, TRADE_API_SECRET, paper=ALPACA_PAPER_TRADE_BOOL)
+        stock_historical_data_client = StockHistoricalDataClientSigned(TRADE_API_KEY, TRADE_API_SECRET)
+        stock_data_stream_client = StockDataStream(TRADE_API_KEY, TRADE_API_SECRET, url_override=STREAM_DATA_WSS)
+        option_historical_data_client = OptionHistoricalDataClientSigned(api_key=TRADE_API_KEY, secret_key=TRADE_API_SECRET)
+        corporate_actions_client = CorporateActionsClientSigned(api_key=TRADE_API_KEY, secret_key=TRADE_API_SECRET)
+        crypto_historical_data_client = CryptoHistoricalDataClientSigned(api_key=TRADE_API_KEY, secret_key=TRADE_API_SECRET)
+        _clients_initialized = True
 
 # ============================================================================
 # Helper Functions
@@ -285,6 +300,7 @@ async def get_account_info() -> str:
             - Pattern Day Trader Status
             - Day Trades Remaining
     """
+    _ensure_clients()
     account = trade_client.get_account()
     
     info = f"""
@@ -318,6 +334,7 @@ async def get_positions() -> str:
             - Current Price
             - Unrealized P/L
     """
+    _ensure_clients()
     positions = trade_client.get_all_positions()
     
     if not positions:
@@ -347,6 +364,7 @@ async def get_open_position(symbol: str) -> str:
     Returns:
         str: Formatted string containing the position details or an error message
     """
+    _ensure_clients()
     try:
         position = trade_client.get_open_position(symbol)
         
@@ -388,6 +406,7 @@ async def get_stock_quote(symbol: str) -> str:
             - Bid Size
             - Timestamp
     """
+    _ensure_clients()
     try:
         request_params = StockLatestQuoteRequest(symbol_or_symbols=symbol)
         quotes = stock_historical_data_client.get_stock_latest_quote(request_params)
@@ -437,6 +456,7 @@ async def get_stock_bars(
     Returns:
         str: Formatted string containing historical price data with timestamps, OHLCV data
     """
+    _ensure_clients()
     try:
         # Parse timeframe string to TimeFrame object
         timeframe_obj = parse_timeframe_with_enums(timeframe)
@@ -530,6 +550,7 @@ async def get_stock_trades(
     Returns:
         str: Formatted string containing trade history or an error message
     """
+    _ensure_clients()
     try:
         # Calculate start time based on days
         start_time = datetime.now() - timedelta(days=days)
@@ -585,6 +606,7 @@ async def get_stock_latest_trade(
     Returns:
         A formatted string containing the latest trade details or an error message
     """
+    _ensure_clients()
     try:
         # Create the request object with all available parameters
         request_params = StockLatestTradeRequest(
@@ -629,6 +651,7 @@ async def get_stock_latest_bar(
     Returns:
         A formatted string containing the latest bar details or an error message
     """
+    _ensure_clients()
     try:
         # Create the request object with all available parameters
         request_params = StockLatestBarRequest(
@@ -729,6 +752,7 @@ async def get_stock_snapshot(
         - daily_bar: Current day's OHLCV bar  
         - previous_daily_bar: Previous trading day's OHLCV bar
     """
+    _ensure_clients()
     try:
         # Create and execute request
         request = StockSnapshotRequest(symbol_or_symbols=symbol_or_symbols, feed=feed, currency=currency)
@@ -819,6 +843,7 @@ async def get_crypto_bars(
     Returns:
         str: Formatted string containing historical crypto price data with timestamps, OHLCV data
     """
+    _ensure_clients()
     try:
         # Parse timeframe string to TimeFrame object
         timeframe_obj = parse_timeframe_with_enums(timeframe)
@@ -918,6 +943,7 @@ async def get_crypto_quotes(
     Returns:
         str: Formatted string containing historical crypto quote data with timestamps, bid/ask prices and sizes
     """
+    _ensure_clients()
     try:
         # Parse start/end times or calculate from days
         start_time = None
@@ -1005,6 +1031,7 @@ async def get_orders(
             - Submission Time
             - Fill Details (if applicable)
     """
+    _ensure_clients()
     try:
         # Convert status string to enum
         if status.lower() == "open":
@@ -1170,6 +1197,7 @@ async def place_stock_order(
     Returns:
         str: Formatted string containing order details or error message.
     """
+    _ensure_clients()
     try:
         # Validate side
         if side.lower() == "buy":
@@ -1342,6 +1370,7 @@ async def place_crypto_order(
     - Requests: [MarketOrderRequest](https://alpaca.markets/sdks/python/api_reference/trading/requests.html#marketorderrequest), [LimitOrderRequest](https://alpaca.markets/sdks/python/api_reference/trading/requests.html#limitorderrequest), [StopLimitOrderRequest](https://alpaca.markets/sdks/python/api_reference/trading/requests.html#stoplimitorderrequest)
     - Enums: [TimeInForce](https://alpaca.markets/sdks/python/api_reference/trading/enums.html#alpaca.trading.enums.TimeInForce)
     """
+    _ensure_clients()
     try:
         # Validate side
         if side.lower() == "buy":
@@ -1469,6 +1498,7 @@ async def cancel_all_orders() -> str:
     Returns:
         A formatted string containing the status of each cancelled order.
     """
+    _ensure_clients()
     try:
         # Cancel all orders
         cancel_responses = trade_client.cancel_orders()
@@ -1504,6 +1534,7 @@ async def cancel_order_by_id(order_id: str) -> str:
     Returns:
         A formatted string containing the status of the cancelled order.
     """
+    _ensure_clients()
     try:
         # Cancel the specific order
         response = trade_client.cancel_order_by_id(order_id)
@@ -1543,6 +1574,7 @@ async def close_position(symbol: str, qty: Optional[str] = None, percentage: Opt
     Returns:
         str: Formatted string containing position closure details or error message
     """
+    _ensure_clients()
     try:
         # Create close position request if options are provided
         close_options = None
@@ -1592,6 +1624,7 @@ async def close_all_positions(cancel_orders: bool = False) -> str:
     Returns:
         str: Formatted string containing position closure results
     """
+    _ensure_clients()
     try:
         # Close all positions
         close_responses = trade_client.close_all_positions(cancel_orders=cancel_orders)
@@ -1627,6 +1660,7 @@ async def exercise_options_position(symbol_or_contract_id: str) -> str:
     Returns:
         str: Success message or error details
     """
+    _ensure_clients()
     try:
         trade_client.exercise_options_position(symbol_or_contract_id=symbol_or_contract_id)
         return f"Successfully submitted exercise request for option contract: {symbol_or_contract_id}"
@@ -1654,6 +1688,7 @@ async def get_asset_info(symbol: str) -> str:
             - Status
             - Trading Properties
     """
+    _ensure_clients()
     try:
         asset = trade_client.get_asset(symbol)
         return f"""
@@ -1688,6 +1723,7 @@ async def get_all_assets(
         exchange: Filter by exchange (e.g., 'NYSE', 'NASDAQ')
         attributes: Comma-separated values to query for multiple attributes
     """
+    _ensure_clients()
     try:
         # Create filter if any parameters are provided
         filter_params = None
@@ -1739,6 +1775,7 @@ async def create_watchlist(name: str, symbols: List[str]) -> str:
     Returns:
         str: Confirmation message with watchlist creation status
     """
+    _ensure_clients()
     try:
         watchlist_data = CreateWatchlistRequest(name=name, symbols=symbols)
         watchlist = trade_client.create_watchlist(watchlist_data)
@@ -1749,6 +1786,7 @@ async def create_watchlist(name: str, symbols: List[str]) -> str:
 @mcp.tool()
 async def get_watchlists() -> str:
     """Get all watchlists for the account."""
+    _ensure_clients()
     try:
         watchlists = trade_client.get_watchlists()
         result = "Watchlists:\n------------\n"
@@ -1766,6 +1804,7 @@ async def get_watchlists() -> str:
 @mcp.tool()
 async def update_watchlist(watchlist_id: str, name: str = None, symbols: List[str] = None) -> str:
     """Update an existing watchlist."""
+    _ensure_clients()
     try:
         update_request = UpdateWatchlistRequest(name=name, symbols=symbols)
         watchlist = trade_client.update_watchlist_by_id(watchlist_id, update_request)
@@ -1789,6 +1828,7 @@ async def get_market_clock() -> str:
             - Next Open Time
             - Next Close Time
     """
+    _ensure_clients()
     try:
         clock = trade_client.get_clock()
         return f"""
@@ -1814,6 +1854,7 @@ async def get_market_calendar(start_date: str, end_date: str) -> str:
     Returns:
         str: Formatted string containing market calendar information
     """
+    _ensure_clients()
     try:
         # Convert string dates to date objects
         start_dt = _parse_date_ymd(start_date)
@@ -1880,6 +1921,7 @@ async def get_corporate_announcements(
         - CorporateActionsType Enum: https://alpaca.markets/sdks/python/api_reference/data/enums.html#corporateactionstype
         - CorporateActionsRequest: https://alpaca.markets/sdks/python/api_reference/data/corporate_actions/requests.html#corporateactionsrequest
     """
+    _ensure_clients()
     try:
         request = CorporateActionsRequest(
             symbols=symbols,
@@ -2089,6 +2131,7 @@ async def get_option_contracts(
         get_option_contracts("NVDA", expiration_expression="week of September 2, 2025")
         get_option_contracts("SPY", expiration_date_gte=date(2025,9,1), expiration_date_lte=date(2025,9,5))
     """
+    _ensure_clients()
     try:
         # Handle natural language expression
         if expiration_expression:
@@ -2183,6 +2226,7 @@ async def get_option_latest_quote(
         This endpoint returns real-time market data. For contract specifications and static data,
         use get_option_contracts instead.
     """
+    _ensure_clients()
     try:
         # Create the request object
         request = OptionLatestQuoteRequest(
@@ -2249,6 +2293,7 @@ async def get_option_snapshot(symbol_or_symbols: Union[str, List[str]], feed: Op
                 * Theta (time decay)
                 * Vega (volatility sensitivity)
     """
+    _ensure_clients()
     try:
         # Create snapshot request
         request = OptionSnapshotRequest(
@@ -2681,6 +2726,7 @@ async def place_option_market_order(
         - Level 4: Uncovered options (naked calls/puts), Short Strangles, Short Straddles, Short Call Calendar Spread, etc.
         If you receive a permission error, please check your account's option trading level.
     """
+    _ensure_clients()
     # Initialize variables that might be used in exception handlers
     order_legs: List[OptionLegRequest] = []
     

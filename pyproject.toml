@@ -13,11 +13,11 @@ build-backend = "hatchling.build"
 [project]
 # Package identification and metadata
 name = "alpaca-mcp-server"
-version = "1.0.0"
+version = "1.0.1"
 description = "Alpaca Trading API integration for Model Context Protocol (MCP)"
 readme = "README.md"
 requires-python = ">=3.10"
-license = {text = "Apache-2.0"}
+license = {text = "MIT"}
 
 # Author information
 authors = [
@@ -65,9 +65,9 @@ Repository = "https://github.com/alpacahq/alpaca-mcp-server"
 "Bug Tracker" = "https://github.com/alpacahq/alpaca-mcp-server/issues"
 Documentation = "https://github.com/alpacahq/alpaca-mcp-server#readme"
 
-# Console script entry points (enables 'alpaca-mcp' command after installation)
+# Console script entry points (enables 'alpaca-mcp-server' command after installation)
 [project.scripts]
-alpaca-mcp = "alpaca_mcp_server.cli:main"
+alpaca-mcp-server = "alpaca_mcp_server.cli:main"
 
 # Tool configuration for development
 [tool.ruff]

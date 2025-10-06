@@ -9,7 +9,7 @@
   "display_name": "Alpaca MCP Server",
   "description": "Comprehensive Alpaca Trading API integration for Model Context Protocol, enabling natural language trading operations through AI assistants",
   "author": "Alpaca",
-  "license": "Apache-2.0",
+  "license": "MIT",
   "homepage": "https://alpaca.markets/",
   "repository": "https://github.com/alpacahq/alpaca-mcp-server",
   "documentation": "https://github.com/alpacahq/alpaca-mcp-server#readme",

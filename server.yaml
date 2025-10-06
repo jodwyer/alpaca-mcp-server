@@ -135,9 +135,9 @@ config:
 
 # Additional metadata for Docker registry
 metadata:
-  license: Apache-2.0
+  license: MIT
   maintainer: Alpaca <https://alpaca.markets/contact>
-  version: "1.0.0"
+  version: "1.0.1"
 
   # Docker-specific configuration
   docker:

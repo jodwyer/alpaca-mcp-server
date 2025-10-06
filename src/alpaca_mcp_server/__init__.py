@@ -23,7 +23,7 @@ __version__ = "1.0.0"
 
 # Package metadata
 __author__ = "Alpaca"
-__license__ = "Apache-2.0"
+__license__ = "MIT"
 __description__ = "Alpaca Trading API integration for Model Context Protocol (MCP)"
 
 # Export main components for easy importing
