@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/01-primary-alpaca-logo.png" alt="Alpaca logo" width="220">
+  <img src="https://raw.githubusercontent.com/alpacahq/alpaca-mcp-server/main/assets/01-primary-alpaca-logo.png" alt="Alpaca logo" width="220">
 </p>
 
 <div align="center">
