@@ -95,8 +95,8 @@ uvx alpaca-mcp-server serve
       "command": "uvx",
       "args": ["alpaca-mcp-server", "serve"],
       "env": {
-        "ALPACA_API_KEY": "your_api_key",
-        "ALPACA_SECRET_KEY": "your_secret_key"
+        "ALPACA_API_KEY": "your_alpaca_api_key",
+        "ALPACA_SECRET_KEY": "your_alpaca_secret_key"
       }
     }
   }
