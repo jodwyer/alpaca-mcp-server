@@ -21,15 +21,15 @@
 
 ## Start here
 
+- **Claude Desktop**
+  - **Local**: Use `uvx` (recommended) or `install.py` → see [Claude Desktop Configuration](#claude-desktop-configuration)
+- **Claude Code**
+  - **Local**: Use `uvx` (recommended) or Docker → see [Claude Code Configuration](#claude-code-configuration)
 - **Cursor**
   - **Remote (recommended)**: Use the Cursor Directory entry and connect in a few clicks → see [Quick Start (Remote Installation)](#quick-start-remote-installation)
   - **Local**: Use `install.py` to set up and auto-configure Cursor → see [Cursor Configuration](#cursor-configuration)
-- **Claude Desktop**
-  - **Local**: Use `uvx` (recommended) or `install.py` → see [Claude Desktop Configuration](#claude-desktop-configuration)
 - **VS Code**
   - **Local**: Use `uvx` (recommended) → see [VS Code Configuration](#vs-code-configuration)
-- **Claude Code**
-  - **Local**: Use `uvx` (recommended) → see [Claude Code Configuration](#claude-code-configuration)
 - **PyCharm**
   - **Local**: Use `uvx` (recommended) → see [PyCharm Configuration](#pycharm-configuration)
 
@@ -429,7 +429,7 @@ Open a terminal in the project root directory and run the following command:
 
 **For the case of configurating with uvx from PyPI:**
 ```bash
-type alpaca-mcp-server serve # When configuring with `uvx` from PyPI
+alpaca-mcp-server serve # When configuring with `uvx` from PyPI
 ```
 
 **For remote usage (HTTP transport):**
@@ -495,22 +495,6 @@ STREAM_DATA_WSS = None
        "alpaca": {
          "command": "uvx",
          "args": ["alpaca-mcp-server", "serve"],
-         "env": {
-           "ALPACA_API_KEY": "your_alpaca_api_key_for_live_account",
-           "ALPACA_SECRET_KEY": "your_alpaca_secret_key_for_live_account"
-         }
-       }
-     }
-   }
-   ```
-
-   **For legacy/development installations:**
-   ```json
-   {
-     "mcpServers": {
-       "alpaca": {
-         "command": "<project_root>/venv/bin/python",
-         "args": ["/path/to/alpaca_mcp_server.py"],
          "env": {
            "ALPACA_API_KEY": "your_alpaca_api_key_for_live_account",
            "ALPACA_SECRET_KEY": "your_alpaca_secret_key_for_live_account"
@@ -627,31 +611,49 @@ Use this local setup to register the server with Claude Code.
 
 Prerequisites:
 - Claude Code CLI installed and authenticated (see Anthropic docs below)
-- uv installed, then restart your terminal: https://docs.astral.sh/uv/getting-started/installation/
 - Alpaca API keys (paper or live)
 
-Steps:
+#### Option 1: Using uvx (Recommended)
+
+Requires uv installed: https://docs.astral.sh/uv/getting-started/installation/
+
 1) Initialize the server (creates a local `.env`):
 ```bash
 uvx alpaca-mcp-server init
 ```
-2) Register the MCP server via Claude Code (updates your `~/.claude.json`):
+
+2) Register the MCP server via Claude Code:
 ```bash
-claude mcp add alpaca --transport stdio uvx alpaca-mcp-server serve \
+claude mcp add alpaca --scope user --transport stdio uvx alpaca-mcp-server serve \
   --env ALPACA_API_KEY=your_alpaca_api_key \
   --env ALPACA_SECRET_KEY=your_alpaca_secret_key
 ```
-3) Verify:
+   - `--scope user` adds the server globally (available in all projects)
+   - Omit `--scope user` to add it only to the current project
+
+#### Option 2: Using Docker
+
+Requires Docker installed and the image built locally (see [Docker Configuration](#docker-configuration)).
+
+```bash
+claude mcp add alpaca-docker --scope user --transport stdio \
+  --env ALPACA_API_KEY=your_alpaca_api_key \
+  --env ALPACA_SECRET_KEY=your_alpaca_secret_key \
+  --env ALPACA_PAPER_TRADE=True \
+  -- docker run -i --rm \
+  -e ALPACA_API_KEY \
+  -e ALPACA_SECRET_KEY \
+  -e ALPACA_PAPER_TRADE \
+  mcp/alpaca:latest
+```
+   - `--scope user` adds the server globally (available in all projects)
+   - Omit `--scope user` to add it only to the current project
+
+#### Verify
+
 - Launch the Claude Code CLI: `claude`
 - Run `/mcp` and confirm the `alpaca` server and tools are listed
-
-Notes:
-- If `uvx` isn’t found, install uv and restart your terminal.
-- If the server doesn’t appear, try `claude mcp list` to review registered servers.
-
-References:
-- Learn how to set up MCP with Claude Code: https://docs.anthropic.com/en/docs/claude-code/mcp
-- Install and set up Claude Code: https://docs.anthropic.com/en/docs/claude-code/setup
+- If the server doesn't appear, try `claude mcp list` to review registered servers
 
 </details>
 
@@ -715,7 +717,7 @@ Create or edit `~/.cursor/mcp.json` (macOS/Linux) or `%USERPROFILE%\.cursor\mcp.
 <details>
 <summary><b>VS Code Configuration</b></summary>
 
-### VS Code Usage
+### VS Code Configuration
 
 To use Alpaca MCP Server with VS Code, please follow the steps below.
 
@@ -793,7 +795,7 @@ Specify the server in the `mcp` VS Code user settings (`settings.json`) to enabl
 <details>
 <summary><b>PyCharm Configuration</b></summary>
 
-### PyCharm Usage
+### PyCharm Configuration
 
 To use the Alpaca MCP Server with PyCharm, please follow the steps below. The official setup guide for configuring the MCP Server in PyCharm is available here: https://www.jetbrains.com/help/ai-assistant/configure-an-mcp-server.html
 
@@ -822,8 +824,9 @@ PyCharm supports MCP servers through its integrated MCP client functionality. Th
 
 <a id="docker-configuration"></a>
 <details>
-<summary><b>Docker Usage</b></summary>
+<summary><b>Docker Configuration</b></summary>
 
+### Docker Configuration (locally)
 **Build the image:**
 ```bash
 git clone https://github.com/alpacahq/alpaca-mcp-server.git
