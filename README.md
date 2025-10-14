@@ -26,12 +26,12 @@
 - **Claude Code**
   - **Local**: Use `uvx` (recommended) or Docker → see [Claude Code Configuration](#claude-code-configuration)
 - **Cursor**
-  - **Remote (recommended)**: Use the Cursor Directory entry and connect in a few clicks → see [Quick Start (Remote Installation)](#quick-start-remote-installation)
-  - **Local**: Use `install.py` to set up and auto-configure Cursor → see [Cursor Configuration](#cursor-configuration)
+  - **Local (Cursor Directory)**: Use the Cursor Directory entry and connect in a few clicks → see [Quick Start](#quick-start-local-installation)
+  - **Local (install.py)**: Use `install.py` to set up and auto-configure Cursor → see [Cursor Configuration](#cursor-configuration)
 - **VS Code**
-  - **Local**: Use `uvx` (recommended) → see [VS Code Configuration](#vs-code-configuration)
+  - **Local**: Use `uvx` → see [VS Code Configuration](#vs-code-configuration)
 - **PyCharm**
-  - **Local**: Use `uvx` (recommended) → see [PyCharm Configuration](#pycharm-configuration)
+  - **Local**: Use `uvx` → see [PyCharm Configuration](#pycharm-configuration)
 
 **Note: How to show hidden files**
 - macOS Finder: Command + Shift + .
@@ -102,13 +102,8 @@ uvx alpaca-mcp-server serve
   }
 }
 ```
-**Note: How to show hidden files**
-- macOS Finder: Command + Shift + .
-- Linux file managers: Ctrl + H
-- Windows File Explorer: Alt, V, H
-- Terminal (macOS/Linux): `ls -a`
 
-## Quick Start (Remote Installation)
+**One-click installation from Cursor Directory:**\
 For Cursor users, you can quickly install Alpaca from the Cursor Directory in just a few clicks.
 
 **1. Find Alpaca in the [Cursor Directory](https://cursor.directory/mcp/alpaca)**\
@@ -683,7 +678,7 @@ Note: If `uv` is not installed, the installer can help you install it. You may n
 
 #### Configure the MCP Server
 
-**Method 1: Using Cursor Settings UI**
+**Method 1: Using Cursor Directory UI**
 For Cursor users, you can quickly install Alpaca from the Cursor Directory in just a few clicks.
 
 **1. Find Alpaca in the [Cursor Directory](https://cursor.directory/mcp/alpaca)**\
