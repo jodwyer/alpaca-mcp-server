@@ -355,8 +355,28 @@ This section shows manual installation of Alpaca MCP Server.
 #### Method 3: Docker
 
   ```bash
-  # Run with Docker
-  docker run -e ALPACA_API_KEY=your_key -e ALPACA_SECRET_KEY=your_secret alpaca/mcp-server
+  # Clone and build
+  git clone https://github.com/alpacahq/alpaca-mcp-server.git
+  cd alpaca-mcp-server
+  docker build -t mcp/alpaca:latest .
+  ```
+
+  Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
+  ```json
+  {
+    "mcpServers": {
+      "alpaca-docker": {
+        "command": "docker",
+        "args": [
+          "run", "--rm", "-i",
+          "-e", "ALPACA_API_KEY=your_key",
+          "-e", "ALPACA_SECRET_KEY=your_secret",
+          "-e", "ALPACA_PAPER_TRADE=True",
+          "mcp/alpaca:latest"
+        ]
+      }
+    }
+  }
   ```
 
 
@@ -804,9 +824,32 @@ PyCharm supports MCP servers through its integrated MCP client functionality. Th
 <details>
 <summary><b>Docker Usage</b></summary>
 
-This project supports Docker, but to keep things simple for non-technical users, prefer the **Remote (Cursor Directory)** or **Local (uvx / install.py)** paths above.
+**Build the image:**
+```bash
+git clone https://github.com/alpacahq/alpaca-mcp-server.git
+cd alpaca-mcp-server
+docker build -t mcp/alpaca:latest .
+```
 
-If you need Docker for development, see `server.yaml` examples and adapt as needed.
+**Add to Claude Desktop config** (`~/Library/Application Support/Claude/claude_desktop_config.json`):
+```json
+{
+  "mcpServers": {
+    "alpaca-docker": {
+      "command": "docker",
+      "args": [
+        "run", "--rm", "-i",
+        "-e", "ALPACA_API_KEY=your_alpaca_api_key",
+        "-e", "ALPACA_SECRET_KEY=your_alpaca_secret_key",
+        "-e", "ALPACA_PAPER_TRADE=True",
+        "mcp/alpaca:latest"
+      ]
+    }
+  }
+}
+```
+
+Replace `your_alpaca_api_key` and `your_alpaca_secret_key` with your actual Alpaca credentials, then restart Claude Desktop.
 
 </details>
 
