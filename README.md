@@ -58,7 +58,7 @@
 
 - **Python 3.10+**
 - **uv** (for `uvx` commands). Install via the official guide: https://docs.astral.sh/uv/getting-started/installation/. Then, restart your terminal
-- **Alpaca Trading API keys** (free paper trading account)
+- **Alpaca Trading API keys** (free paper trading account available)
 - **MCP client** (Claude Desktop, Cursor, VS Code, etc.)
 
 ## Getting Your API Keys
