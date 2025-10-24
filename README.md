@@ -74,9 +74,6 @@
 ```bash
 # Install and configure
 uvx alpaca-mcp-server init
-
-# Start the server
-uvx alpaca-mcp-server serve
 ```
 
 **Note:** If you don't have `uv` yet, install it first and then restart your terminal so `uv`/`uvx` are recognized. See the official guide: https://docs.astral.sh/uv/getting-started/installation/
@@ -329,9 +326,6 @@ This section shows manual installation of Alpaca MCP Server.
   ```bash
   # Install and configure
   uvx alpaca-mcp-server init
-
-  # Start the server
-  uvx alpaca-mcp-server serve
   ```
 
 #### Method 2: Install.py
@@ -379,22 +373,31 @@ This section shows manual installation of Alpaca MCP Server.
 
 ### Project Structure
 
-After cloning and activating the virtual environment, your directory structure should look like this:
+After installing/cloning and activating the virtual environment, your directory structure should look like this:
 ```
 alpaca-mcp-server/          ← This is the workspace folder (= project root)
-├── alpaca_mcp_server.py    ← Script is directly in workspace root
-├── .github/                ← VS Code settings (for VS Code users)
-│ ├── core/                 ← Core utility modules
-│ └── workflows/            ← GitHub Actions workflows
+├── src/                    ← Source code package
+│   └── alpaca_mcp_server/  ← Main package directory
+│       ├── __init__.py
+│       ├── cli.py          ← Command-line interface
+│       ├── config.py       ← Configuration management
+│       └── server.py       ← MCP server implementation
+├── tests/                  ← Test files
+│   └── test_get_stock_quote.py
+├── .github/                ← GitHub settings
+│   ├── core/               ← Core utility modules
+│   └── workflows/          ← GitHub Actions workflows
 ├── .vscode/                ← VS Code settings (for VS Code users)
 │   └── mcp.json
-├── venv/                   ← Virtual environment folder
+├── .venv/                   ← Virtual environment folder
 │   └── bin/python
 ├── .env.example            ← Environment template (use this to create `.env` file)
 ├── .gitignore              
 ├── Dockerfile              ← Docker configuration (for Docker use)
 ├── .dockerignore           ← Docker ignore (for Docker use)
-├── requirements.txt           
+├── pyproject.toml          ← Package configuration
+├── requirements.txt        ← Python dependencies
+├── install.py              ← Installation script
 └── README.md
 ```
 
@@ -418,22 +421,23 @@ alpaca-mcp-server/          ← This is the workspace folder (= project root)
    DEBUG = False
    ```
 
-### 3. Start the MCP Server
+### 3. Start the MCP Server (Remote Setup Only)
 
-Open a terminal in the project root directory and run the following command:
+**Note:** You typically **don't need to manually start the server** for local usage. MCP clients like Claude Desktop and Cursor will automatically start the server when configured. 
 
-**For the case of configurating with uvx from PyPI:**
-```bash
-alpaca-mcp-server serve # When configuring with `uvx` from PyPI
-```
+You only need to manually start the server if you're setting it up for **remote access** (e.g., running the server on a remote machine and connecting from a different computer).
 
 **For remote usage (HTTP transport):**
 ```bash
-python alpaca_mcp_server.py --transport http # When configuring with `uv` or `pip`
+# Start with default settings (localhost:8000)
+alpaca-mcp-server serve --transport http
+
+# Or specify custom host and port
+alpaca-mcp-server serve --transport http --host 0.0.0.0 --port 9000
 ```
 
 **Available transport options:**
-- `--transport stdio` (default): Standard input/output for local client connections
+- `--transport stdio` (default): Standard input/output for local client connections (automatically used by MCP clients)
 - `--transport http`: HTTP transport for remote client connections (default: 127.0.0.1:8000)
 - `--transport sse`: Server-Sent Events transport for remote connections (deprecated)
 - `--host HOST`: Host to bind the server to for HTTP/SSE transport (default: 127.0.0.1)
@@ -551,48 +555,6 @@ python3 install.py
 ```
 
 Choose `claude` when prompted. The installer sets up `.venv`, writes `.env`, and updates `claude_desktop_config.json`. Restart Claude Desktop.
-
-<details>
-<summary><b>Method 3: Legacy Installation (Deprecated)</b></summary>
-
-#### Method 3: Legacy Installation
-
-**For existing installations (stdio transport):**
-```json
-{
-  "mcpServers": {
-    "alpaca": {
-      "type": "stdio",
-      "command": "<project_root>/venv/bin/python",
-      "args": [
-        "/path/to/alpaca-mcp-server/alpaca_mcp_server.py"
-      ],
-      "env": {
-        "ALPACA_API_KEY": "your_alpaca_api_key_for_paper_account",
-        "ALPACA_SECRET_KEY": "your_alpaca_secret_key_for_paper_account"
-      }
-    }
-  }
-}
-```
-
-**For remote usage (HTTP transport):**
-```json
-{
-  "mcpServers": {
-    "alpaca": {
-      "type": "http",
-      "url": "http://your-server-ip:8000/mcp",
-      "env": {
-        "ALPACA_API_KEY": "your_alpaca_api_key_for_paper_account",
-        "ALPACA_SECRET_KEY": "your_alpaca_secret_key_for_paper_account"
-      }
-    }
-  }
-}
-```
-
-</details>
 
 </details>
 
@@ -773,7 +735,7 @@ Specify the server in the `mcp` VS Code user settings (`settings.json`) to enabl
       "alpaca": {
         "type": "stdio",
         "command": "bash",
-        "args": ["-c", "cd ${workspaceFolder} && source ./venv/bin/activate && python alpaca_mcp_server.py"],
+        "args": ["-c", "cd ${workspaceFolder} && source ./.venv/bin/activate && alpaca-mcp-server serve"],
         "env": {
           "ALPACA_API_KEY": "your_alpaca_api_key",
           "ALPACA_SECRET_KEY": "your_alpaca_secret_key"
@@ -861,17 +823,17 @@ For users who need to run the MCP server on a remote machine (e.g., Ubuntu serve
 ### Server Setup (Remote Machine)
 ```bash
 # Start server with HTTP transport (default: 127.0.0.1:8000)
-python alpaca_mcp_server.py --transport http
+alpaca-mcp-server serve --transport http
 
 # Start server with custom host/port for remote access
-python alpaca_mcp_server.py --transport http --host 0.0.0.0 --port 9000
+alpaca-mcp-server serve --transport http --host 0.0.0.0 --port 9000
 
 # For systemd service (example from GitHub issue #6)
 # Update your start script to use HTTP transport
 #!/bin/bash
 cd /root/alpaca-mcp-server
-source venv/bin/activate
-exec python3 -u alpaca_mcp_server.py --transport http --host 0.0.0.0 --port 8000
+source .venv/bin/activate
+exec alpaca-mcp-server serve --transport http --host 0.0.0.0 --port 8000
 ```
 
 **Remote Access Options:**
@@ -1000,4 +962,4 @@ This is not an offer, solicitation of an offer, or advice to buy or sell securit
 
 ## Usage Analytics Notice
 
-The user agent for API calls defaults to 'ALPACA-MCP-SERVER' to help Alpaca identify MCP server usage and improve user experience. You can opt out by modifying the 'USER_AGENT' constant in '.github/core/user_agent_mixin.py' or by removing the 'UserAgentMixin' from the client class definitions in 'alpaca_mcp_server.py' — though we kindly hope you'll keep it enabled to support ongoing improvements.
+The user agent for API calls defaults to 'ALPACA-MCP-SERVER' to help Alpaca identify MCP server usage and improve user experience. You can opt out by modifying the 'USER_AGENT' constant in '.github/core/user_agent_mixin.py' or by removing the 'UserAgentMixin' from the client class definitions in 'src/alpaca_mcp_server/server.py' — though we kindly hope you'll keep it enabled to support ongoing improvements.

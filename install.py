@@ -336,7 +336,7 @@ STREAM_DATA_WSS = {api_config['STREAM_DATA_WSS']}
 def generate_mcp_config(project_dir: Path, venv_path: Path) -> Dict[str, Any]:
     """Generate MCP server configuration."""
     # Get paths
-    server_script = project_dir / "alpaca_mcp_server.py"
+    server_script = project_dir / "src" / "alpaca_mcp_server" / "server.py"
     
     # Virtual environment installation
     venv_python = get_venv_python(venv_path)
@@ -506,7 +506,7 @@ def print_instructions(project_dir: Path, venv_path: Path, config: Dict[str, Any
     """Print final setup instructions."""
     print_step(8, "Setup Complete - Next Steps")
     
-    server_script = project_dir / "alpaca_mcp_server.py"
+    server_script = project_dir / "src" / "alpaca_mcp_server" / "server.py"
     env_file = project_dir / ".env"
     client_name = selected_client.title()
     

@@ -409,12 +409,13 @@ async def get_stock_quote(symbol_or_symbols: Union[str, List[str]]) -> str:
     """
     _ensure_clients()
     try:
-        request_params = StockLatestQuoteRequest(symbol_or_symbols=symbol_or_symbols)
-        quotes = stock_historical_data_client.get_stock_latest_quote(request_params)
-
+        # Validate input before making API call
         symbols = [symbol_or_symbols] if isinstance(symbol_or_symbols, str) else list(symbol_or_symbols)
         if not symbols:
             return "No symbols provided."
+        
+        request_params = StockLatestQuoteRequest(symbol_or_symbols=symbol_or_symbols)
+        quotes = stock_historical_data_client.get_stock_latest_quote(request_params)
 
         results: List[str] = ["Latest Stock Quotes:", "====================", ""]
         for symbol in symbols:
